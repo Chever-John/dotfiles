@@ -4,6 +4,6 @@
 
 [English](README.md) | [中文](README-zh.md)
 
-## Background
+## 描述
 
-This is the project I personally use to record information about my various profiles, remember not to copy my ha ~
+这是我个人用来记录自己各个配置文件信息的项目，切记不要照搬我的哈～
