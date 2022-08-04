@@ -26,6 +26,3 @@ tar -xvf nvim-linux64.tar.gz
 
 此处参考的是 YouTube 上
 
-
-
-variables = { LDAP_DIR = "/etc/openldap/", }
