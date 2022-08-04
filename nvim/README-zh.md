@@ -26,3 +26,44 @@ tar -xvf nvim-linux64.tar.gz
 
 此处参考的是 YouTube 上
 
+## 可能存在的问题
+
+你会遇到需要你 `Run ":checkhealth provider"` 的问题。这个问题的本质是你没有匹配好本地的 Python 版本，经过测试，python3.8.10 可以解决这个问题。解决方法如下：
+
+1. 首先得到 Python3.8.10 的远吗安装包，命令如下：
+
+```bash
+wget https://www.python.org/ftp/python/3.8.10/Python-3.8.10.tgz
+```
+
+解压安装包，命令如下：
+
+```bash
+tar -xvf Python-3.8.10.tgz
+```
+
+进入到该压缩安装包，命令如下：
+
+```bash
+cd Python-3.8.10
+```
+
+2. 然后编译 Python，命令如下：
+
+```bash
+.configure
+```
+
+安装 Python，命令如下：
+
+```bash
+sudo make && sudo make install
+```
+
+3. 接下来需要安装pynvim 包，命令如下：
+
+```bash
+python3 -m pip install --user --upgrade pynvim
+```
+
+然后就解决问题了。
