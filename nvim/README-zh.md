@@ -1,6 +1,32 @@
-# 如何使用好本文件夹？
+# README
 
-## 使用软链
+## 一些常见插件的介绍以及用法简介
+
+### vim-airline
+
+GitHub:  https://github.com/vim-airline/vim-airline
+
+可以作为状态栏的插件而已，暂时没有发现可以命令交互的场景。
+
+### ctrlp
+
+GitHub: https://github.com/ctrlpvim/ctrlp.vim
+
+这个插件比较常用，我们可以用它的模糊搜索功能（fuzzing search）。
+
+具体用法就是，在正常编辑模式下，直接 `control + p` 键即可。
+
+然后你就可以输入你想要访问的文件。支持模糊搜索。
+
+### vim-commentary
+
+这是一个注释用的插件。具体操作流程如下 gif 图所示：
+
+![](https://cdn.mr8god.cn/img/Kapture 2022-08-07 at 12.32.08.gif)
+
+## 如何使用好本文件夹？
+
+### 使用软链
 
 我们可以直接使用软链接，将原本系统里的配置文件替换成这个文件夹里的配置文件。此处需要注意的是，因为一般性，我的 neovim 的配置文件 `init.vim` 位置处于 `~/.config/nvim/init.vim`。那么我只需要运行如下的软链接设置命令即可：
 
@@ -10,7 +36,7 @@ ln -s /nvim/init.vim ~/.config/nvim/init.vim
 
 注意该命令运行位置在本项目的根目录下，请万分注意～
 
-## 如何更新 Neovim
+### 如何更新 Neovim
 
 我想，当我某一天使用 nvim 打开某个文件夹，这丫的，居然给我爆出这个错误，错误如下图所示：
 
@@ -25,7 +51,7 @@ System arch: x86_64
 
 然后开始我的安排：
 
-### 删除 Neovim
+#### 删除 Neovim
 
 首先删除 neovim，命令如下：
 
@@ -33,7 +59,7 @@ System arch: x86_64
 sudo apt remove neovim -y
 ```
 
-### 更新 Neovim
+#### 更新 Neovim
 
 然后开始更新，首先添加仓库，命令如下：
 
@@ -54,13 +80,13 @@ sudo apt-get install neovim
 nvim --version
 ```
 
-## 如何配置 nvim
+### 如何配置 nvim
 
-### Centos7 上的安装方法
+#### Centos7 上的安装方法
 
 不要尝试包括但不仅限于 `dnf`、`yum`的命令去安装 nvim，这是徒劳的。要知道对于 Centos7 这个感觉已经被世界抛弃了的版本来说，这些通用的包管理工具支持程度不高！
 
-### 安装方法
+#### 安装方法
 
 进入到 nvim 的版本下载[地址](https://github.com/neovim/neovim/releases/tag/v0.7.2)，这边我选择下载 `Nvim v0.7.2` 版本。命令如下：
 
@@ -78,11 +104,11 @@ tar -xvf nvim-linux64.tar.gz
 
 就是这么简单就好了，千万别想着去用 cmake 一类的工具自己编译（当然如果你有时间的话，另说）
 
-### 配置文件
+#### 配置文件
 
 此处参考的是 YouTube 上
 
-### 可能存在的问题
+#### 配置中可能存在的问题
 
 你会遇到需要你 `Run ":checkhealth provider"` 的问题。这个问题的本质是你没有匹配好本地的 Python 版本，经过测试，python3.8.10 可以解决这个问题。解决方法如下：
 
