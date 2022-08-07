@@ -10,6 +10,50 @@ ln -s /nvim/init.vim ~/.config/nvim/init.vim
 
 注意该命令运行位置在本项目的根目录下，请万分注意～
 
+## 如何更新 Neovim
+
+我想，当我某一天使用 nvim 打开某个文件夹，这丫的，居然给我爆出这个错误，错误如下图所示：
+
+![错误报错图](https://cdn.mr8god.cn/img/error_image_2022-08-07_10-44-38.png)
+
+我就知道我摊上事了，首先汇报我的系统版本：
+
+```bash
+Ubuntu version: 20.04.4 LTS (GNU/Linux 5.4.0-122-generic x86_64)
+System arch: x86_64
+```
+
+然后开始我的安排：
+
+### 删除 Neovim
+
+首先删除 neovim，命令如下：
+
+```bash
+sudo apt remove neovim -y
+```
+
+### 更新 Neovim
+
+然后开始更新，首先添加仓库，命令如下：
+
+```bash
+sudo add-apt-repository ppa:neovim-ppa/stable
+```
+
+然后开始安装，命令如下：
+
+```bash
+sudo apt-get update
+sudo apt-get install neovim
+```
+
+然后就大功告成，然后可以用如下命令查看版本：
+
+```bash
+nvim --version
+```
+
 ## 如何配置 nvim
 
 ### Centos7 上的安装方法
