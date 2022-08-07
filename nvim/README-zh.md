@@ -22,7 +22,11 @@ GitHub: https://github.com/ctrlpvim/ctrlp.vim
 
 这是一个注释用的插件。具体操作流程如下 gif 图所示：
 
-![](https://cdn.mr8god.cn/img/Kapture 2022-08-07 at 12.32.08.gif)
+![](https://cdn.mr8god.cn/img/Kapture2022-08-07123208.gif)
+
+
+
+
 
 ## 如何使用好本文件夹？
 
