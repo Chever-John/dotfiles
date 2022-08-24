@@ -65,6 +65,9 @@ packer.startup(
         -- 常见编程语言代码段
         use("rafamadriz/friendly-snippets")
 
+         -- indent-blankline
+    use("lukas-reineke/indent-blankline.nvim")
+
 end)
 config = {
     -- 并发数限制
