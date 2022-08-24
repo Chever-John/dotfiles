@@ -37,6 +37,13 @@ packer.startup(
     -- telescope extensions
     use "LinArcX/telescope-env.nvim"
 
+    -- dashboard-nvim (新增)
+    use("glepnir/dashboard-nvim")
+
+    -- project
+    use("ahmedkhalf/project.nvim")
+
+
 end)
 config = {
     -- 并发数限制
