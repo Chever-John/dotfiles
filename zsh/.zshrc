@@ -1,5 +1,5 @@
 # If you come from bash you might have to change your $PATH.
-export PATH=$HOME/bin:/usr/bin:/usr/local/bin:/usr/local/go/bin:/home/john/go/bin:/home/john/infra/softwares/kk_soft:/home/john/infra/softwares/cmake/bin:/home/john/infra/softwares/nvim/nvim-linux64/bin:/home/john/infra/softwares/node/node-v16.16.0-linux-x64/bin:$PATH
+export PATH=$HOME/bin:/usr/bin:/usr/local/bin:/usr/local/go/bin:/Users/10027852/infra/dev_env/ktconnect:/home/john/go/bin:/home/john/infra/softwares/kk_soft:/home/john/infra/softwares/cmake/bin:/home/john/infra/softwares/nvim/nvim-linux64/bin:/home/john/infra/softwares/node/node-v16.16.0-linux-x64/bin:$PATH
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -106,3 +106,6 @@ alias kb='kubectl'
 alias dc='docker'
 alias dps='docker ps -a'
 alias dis='docker images -a'
+alias vim='nvim'
+alias vi='nvim'
+alias v='nvim'
