@@ -53,6 +53,18 @@ map("t", "<A-l>", [[ <C-\><C-N><C-w>l ]], opt)
 -- 插件快捷键
 local pluginKeys = {}
 
+-- bufferline
+-- 左右Tab切换，注意 macOS 中好像并不能使用 C-h，因为 macOS 好像没有默认的 Ctrl 键
+map("n", "<C-h>", ":BufferLineCyclePrev<CR>", opt)
+map("n", "<C-l>", ":BufferLineCycleNext<CR>", opt)
+-- 关闭
+
+--"moll/vim-bbye"
+map("n", "<C-w>", ":Bdelete!<CR>", opt)
+map("n", "<leader>bl", ":BufferLineCloseRight<CR>", opt)
+map("n", "<leader>bh", ":BufferLineCloseLeft<CR>", opt)
+map("n", "<leader>bc", ":BufferLinePickClose<CR>", opt)
+
 -- nvim-tree
 -- alt + m 键打开关闭tree
 map("n", "<A-m>", ":NvimTreeToggle<CR>", opt)
@@ -77,3 +89,5 @@ pluginKeys.nvimTreeList = {
   { key = "s", action = "system_open" },
 }
 return pluginKeys
+
+
