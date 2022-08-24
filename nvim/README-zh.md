@@ -22,11 +22,11 @@ GitHub: https://github.com/ctrlpvim/ctrlp.vim
 
 这是一个注释用的插件。具体操作流程如下 gif 图所示：
 
-![](https://cdn.mr8god.cn/img/Kapture2022-08-07123208.gif)
+![shenmegui](https://cdn.mr8god.cn/img/Kapture2022-08-07123208.gif)
 
+### vim-gitgutter
 
-
-
+显示是否有增改，如果你增加了一行，他会提示一个加号，仅此而已。
 
 ## 如何使用好本文件夹？
 
