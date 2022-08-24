@@ -20,6 +20,11 @@ packer.startup(
    use("ful1e5/onedark.nvim")
    -- nightfox
    use("EdenEast/nightfox.nvim")
+   
+   -------------------------- plugins -------------------------------------------
+    -- nvim-tree (新增)
+    use({ "kyazdani42/nvim-tree.lua", requires = "kyazdani42/nvim-web-devicons" })
+
 end)
 config = {
     -- 并发数限制
