@@ -1,4 +1,137 @@
-# README
+# NeoVim 
+
+我更新了最全套的
+
+## Neovim（Lua 版本）
+
+花了一点钱，在掘金小册上买了一套[书](https://juejin.cn/book/7051157342770954277?scrollMenuIndex=0)，然后根据其搭建了一套基本的 Neovim 的框架知识。目前我的 Neovim（lua 版本）如 `tree` 命令所示：
+
+```bash
+➜  nvim git:(master*)tree
+.
+├── README-zh.md
+├── README.md
+├── init.lua
+├── init.vim.bp
+├── lua
+│   ├── basic.lua
+│   ├── colorscheme.lua
+│   ├── keybindings.lua
+│   ├── lsp
+│   │   ├── cmp.lua
+│   │   ├── config
+│   │   │   ├── go.lua
+│   │   │   └── lua.lua
+│   │   ├── formatter.lua
+│   │   ├── null-ls.lua
+│   │   ├── setup.lua
+│   │   └── ui.lua
+│   ├── plugin-config
+│   │   ├── bufferline.lua
+│   │   ├── dashboard.lua
+│   │   ├── indent-blankline.lua
+│   │   ├── lualine.lua
+│   │   ├── nvim-tree.lua
+│   │   ├── nvim-treesitter.lua
+│   │   ├── project.lua
+│   │   └── telescope.lua
+│   └── plugins.lua
+└── plugin
+    └── packer_compiled.lua
+```
+
+本文将讲解 `nvim` 基本框架、如何快速在一台新的机器上搭建 `nvim` 开发环境两个话题开展。
+
+### nvim 框架的讲解
+
+搭建 nvim 个人环境的方式有很多，大致可以分为三个阶段：选好合适的包管理工具、调教好适合自己的定制化配置、选择合适的插件。其中某些插件会跟默认的配置有一些冲突，我们也要选择性地进行调校。
+
+### ⭐️如何快速搭建起自己的 nvim 开发环境
+
+这是很重要的环节，首先将项目从 GitHub [地址](https://github.com/chever-john/dotfiles) pull 到本地，这一点是毋庸置疑的。这是第一阶段最简单的操作。本小结将围绕一下几个阶段完成：
+
+1. 安装 Nerd font 字体
+2. 将项目拉到本地，并设置好一些必要的操作；
+3. 将 nvim 需要的一些插件或者软件下载；
+
+#### 第一步：安装 Nerd font 字体
+
+##### 背景介绍
+
+事实上在之前使用了那么久的 nvim，我居然一直都没有安装 Nerd Font 字体，这属实是一件很离谱的事情。因为官方也没有告诉我必须要安装 Nerd Font 字体。
+
+事实上，因为命令行中是不支持显示图标的，我们只有通过安装 Nerd font，才能够解决问题。Nerd Fonts 是一个使用了大量字体图标来解决程序员在开发过程中缺少合适字体的问题的项目。它可以从流行的字体图标库中将大量外部字体引入待开发的项目中，它支持的字体图标库包括 Font Awesome , Devicons , Octicons , and others。
+
+简单来说，Nerd Fonts 就是常见的各种 iconic fonts，打包到你常用的字体里，这样在命令行汇总就可以显示这些图标了。
+
+因为 Neovim 很多插件都会使用到这里的图表，所以我们必须要正确安装才可以在命令行中正确显示 icons。
+
+##### 安装 Nerd fonts
+
+Nerd fonts 本身并不是一种新的字体，而是把常用图标以打补丁的方式打到了常用字体上。
+
+比如我在 VSCode 里最常用的是 `Fira Code` 字体，那么我就要去安装这个打了 Nerd fonts 补丁的 `FiraCode` 字体。或者你也可以到官网这里 [www.nerdfonts.com/font-downlo…](https://link.juejin.cn/?target=https%3A%2F%2Fwww.nerdfonts.com%2Ffont-downloads) 找到你喜欢的字体。
+
+这里我找到的字体的路径为：
+
+```bash
+https://github.com/ryanoasis/nerd-fonts/tree/master/patched-fonts/FiraCode/Regular/complete/
+```
+
+此处注意⚠️要下载兼容 Windows 的版本，即名为 `Windows Compatible.ttf`，下载后点击安装即可完成。
+
+然后回到 Terminal（macOS 就是我常用的 Iterm2啦）中点击设置，外观，选择我们下载的字体即可。安装完成之后，可以测试一下，点击一下[网址](https://link.juejin.cn/?target=https%3A%2F%2Fwww.nerdfonts.com%2Fcheat-sheet)，然后复制 icon，然后粘贴到命令行中，看一下是否正常即可。
+
+#### 第二步：将项目 pull 到本地
+
+首先确保本地已经安装了 neovim，安装的方式参见[官方文档](https://github.com/neovim/neovim/wiki/Installing-Neovim)。
+
+总而言之，不管你是什么系统，macOS 还是 ubuntu，最后一切的最开始一定是要有 neovim 的。
+
+```bash
+➜  ~ nvim --version
+NVIM v0.7.0
+Build type: Release
+LuaJIT 2.1.0-beta3
+Compiled by brew@HMBRW-A-001-M1-004.local
+```
+
+##### 拉取项目
+
+确保本地安装好 git，然后我们最好位于当前用户的根目录下，执行命令如下：
+
+```bash
+git clone git@github.com:Chever-John/dotfiles.git
+```
+
+这个时候我们大概率会得到一个 `/Users/cheverjohn/dotfiles` 文件，我个人一般会将其文件夹再命名为 `/Users/cheverjohn/.dotfiles`，这样可以隐藏起来。
+
+所以此时我们的个人配置文件 `nvim` 的目录地址为 `/Users/cheverjohn/.dotfiles/nvim`。
+
+##### 配置软链接
+
+因为 nvim 默认的配置文件入口在 `~/.config/nvim/init.lua`，当然也可以是 `~/.config/nvim/init.vim`。
+
+所以此处选择直接使用软链接，在 `~/.config` 中软链接一个 `nvim` 文件夹。软链接命令如下：
+
+```bash
+ln -s ~/.dotfiles/nvim ~/.config/nvim
+```
+
+#### 第三步：将一些依赖 or 插件下载
+
+##### 安装插件管理器
+
+我是用 Packer.nvim 插件管理器。
+
+安装命令如下：
+
+```bash
+git clone --depth 1 https://github.com/wbthomason/packer.nvim\
+ ~/.local/share/nvim/site/pack/packer/start/packer.nvim
+```
+
+一般到现在的话，一切就都已经结束了。
 
 ## 一些常见插件的介绍以及用法简介
 
