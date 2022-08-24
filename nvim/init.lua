@@ -6,3 +6,6 @@ require('keybindings')
 
 -- Packer 插件管理
 require('plugins')
+
+-- Theme configuration
+require('colorscheme')
