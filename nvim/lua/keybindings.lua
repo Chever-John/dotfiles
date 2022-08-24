@@ -53,6 +53,12 @@ map("t", "<A-l>", [[ <C-\><C-N><C-w>l ]], opt)
 -- 插件快捷键
 local pluginKeys = {}
 
+-- Telescope
+-- 查找文件
+map("n", "<C-p>", ":Telescope find_files<CR>", opt)
+-- 全局搜索
+map("n", "<C-f>", ":Telescope live_grep<CR>", opt)
+
 -- bufferline
 -- 左右Tab切换，注意 macOS 中好像并不能使用 C-h，因为 macOS 好像没有默认的 Ctrl 键
 map("n", "<C-h>", ":BufferLineCyclePrev<CR>", opt)
@@ -68,6 +74,7 @@ map("n", "<leader>bc", ":BufferLinePickClose<CR>", opt)
 -- nvim-tree
 -- alt + m 键打开关闭tree
 map("n", "<A-m>", ":NvimTreeToggle<CR>", opt)
+
 -- 列表快捷键
 pluginKeys.nvimTreeList = {
   -- 打开文件或文件夹
@@ -88,6 +95,26 @@ pluginKeys.nvimTreeList = {
   { key = "p", action = "paste" },
   { key = "s", action = "system_open" },
 }
-return pluginKeys
 
+
+-- Telescope 列表中 插入模式快捷键
+pluginKeys.telescopeList = {
+  i = {
+    -- 上下移动
+    ["<C-j>"] = "move_selection_next",
+    ["<C-k>"] = "move_selection_previous",
+    ["<Down>"] = "move_selection_next",
+    ["<Up>"] = "move_selection_previous",
+    -- 历史记录
+    ["<C-n>"] = "cycle_history_next",
+    ["<C-p>"] = "cycle_history_prev",
+    -- 关闭窗口
+    ["<C-c>"] = "close",
+    -- 预览窗口上下滚动
+    ["<C-u>"] = "preview_scrolling_up",
+    ["<C-d>"] = "preview_scrolling_down",
+  },
+}
+
+return pluginKeys
 

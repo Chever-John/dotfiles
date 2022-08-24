@@ -129,6 +129,21 @@ _G.packer_plugins = {
     path = "/Users/10027852/.local/share/nvim/site/pack/packer/start/packer.nvim",
     url = "https://github.com/wbthomason/packer.nvim"
   },
+  ["plenary.nvim"] = {
+    loaded = true,
+    path = "/Users/10027852/.local/share/nvim/site/pack/packer/start/plenary.nvim",
+    url = "https://github.com/nvim-lua/plenary.nvim"
+  },
+  ["telescope-env.nvim"] = {
+    loaded = true,
+    path = "/Users/10027852/.local/share/nvim/site/pack/packer/start/telescope-env.nvim",
+    url = "https://github.com/LinArcX/telescope-env.nvim"
+  },
+  ["telescope.nvim"] = {
+    loaded = true,
+    path = "/Users/10027852/.local/share/nvim/site/pack/packer/start/telescope.nvim",
+    url = "https://github.com/nvim-telescope/telescope.nvim"
+  },
   ["tokyonight.nvim"] = {
     loaded = true,
     path = "/Users/10027852/.local/share/nvim/site/pack/packer/start/tokyonight.nvim",
