@@ -223,6 +223,7 @@ pluginKeys.mapTsLSP = function(mapbuf)
     mapbuf('n', 'gi', ':TSLspImportAll<CR>', opt)
 end
 
+-- ToggleTerm 快捷键
 pluginKeys.mapToggleTerm = function(toggleterm)
     vim.keymap.set({ 'n', 't' }, '<leader>ta', toggleterm.toggleA)
     vim.keymap.set({ 'n', 't' }, '<leader>tb', toggleterm.toggleB)

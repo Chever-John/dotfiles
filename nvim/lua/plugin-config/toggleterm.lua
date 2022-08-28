@@ -64,15 +64,15 @@ local M = {}
 
 M.toggleA = function()
     if ta:is_open() then
-        tb:close()
+        ta:close()
         return
     end
-    ta:close()
+    tb:close()
     tc:close()
-    tb:open()
+    ta:open()
 end
 M.toggleB = function()
-    if ta:is_open() then
+    if tb:is_open() then
         tb:close()
         return
     end
@@ -81,13 +81,13 @@ M.toggleB = function()
     tb:open()
 end
 M.toggleC = function()
-    if ta:is_open() then
-        tb:close()
+    if tc:is_open() then
+        tc:close()
         return
     end
     ta:close()
-    tc:close()
-    tb:open()
+    tb:close()
+    tc:open()
 end
 M.toggleG = function()
     lazygit:toggle()
