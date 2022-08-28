@@ -3,7 +3,10 @@ packer.startup(function(use)
     -- Packer 可以管理自己本身
     use('wbthomason/packer.nvim')
     -- 你的插件列表...
-    --
+    -- git
+    use({ 'lewis6991/gitsigns.nvim' })
+    -- wakatime
+    use('wakatime/vim-wakatime')
     -- Colorschemes
     -- tokyonight
     use('folke/tokyonight.nvim')
