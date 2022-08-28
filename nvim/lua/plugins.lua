@@ -8,14 +8,36 @@ packer.startup({
         use({ 'lewis6991/gitsigns.nvim' })
         -- wakatime
         use('wakatime/vim-wakatime')
+
+        -------------------------- Optimize experience -------------------------------
+        -- nvim-tree
+        use({ 'kyazdani42/nvim-tree.lua', requires = 'kyazdani42/nvim-web-devicons' })
+        -- bufferline
+        use({ 'akinsho/bufferline.nvim', requires = { 'kyazdani42/nvim-web-devicons', 'moll/vim-bbye' } })
+        -- lualine
+        use({ 'nvim-lualine/lualine.nvim', requires = { 'kyazdani42/nvim-web-devicons' } })
+        use('arkav/lualine-lsp-progress')
+        -- telescope
+        use({ 'nvim-telescope/telescope.nvim', requires = { 'nvim-lua/plenary.nvim' } })
+        -- telescope extensions
+        use('LinArcX/telescope-env.nvim')
+        -- dashboard-nvim
+        use('glepnir/dashboard-nvim')
+        -- project
+        use('ahmedkhalf/project.nvim')
+        -- treesitter
+        use({ 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' })
+
+        -------------------------- Themes --------------------------------------------
         -- Colorschemes
+        -- Description: This section focuses on the themes of nvim.
         -- tokyonight
         use('folke/tokyonight.nvim')
         -- OceanicNext
         use('mhartington/oceanic-next')
         -- gruvbox
         use({ 'ellisonleao/gruvbox.nvim', requires = { 'rktjmp/lush.nvim' } })
-        -- zephyr 暂时不推荐，详见上边解释
+        -- zephyr 因为 zephyr 最近会跟 treesitter 插件冲突，所以暂时不推荐。
         -- use("glepnir/zephyr-nvim")
         -- nord
         use('shaunsingh/nord.nvim')
@@ -24,37 +46,10 @@ packer.startup({
         -- nightfox
         use('EdenEast/nightfox.nvim')
 
-        -------------------------- plugins -------------------------------------------
-        -- nvim-tree (新增)
-        use({ 'kyazdani42/nvim-tree.lua', requires = 'kyazdani42/nvim-web-devicons' })
-
-        -- bufferline (新增)
-        use({ 'akinsho/bufferline.nvim', requires = { 'kyazdani42/nvim-web-devicons', 'moll/vim-bbye' } })
-
-        -- lualine (新增)
-        use({ 'nvim-lualine/lualine.nvim', requires = { 'kyazdani42/nvim-web-devicons' } })
-        use('arkav/lualine-lsp-progress')
-
-        -- telescope （新增）
-        use({ 'nvim-telescope/telescope.nvim', requires = { 'nvim-lua/plenary.nvim' } })
-        -- telescope extensions
-        use('LinArcX/telescope-env.nvim')
-
-        -- dashboard-nvim (新增)
-        use('glepnir/dashboard-nvim')
-
-        -- project
-        use('ahmedkhalf/project.nvim')
-
-        -- treesitter （新增）
-        use({ 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' })
-
         --------------------- LSP --------------------
-
         use('williamboman/nvim-lsp-installer')
         -- Lspconfig
         use({ 'neovim/nvim-lspconfig' })
-
         -- 补全引擎
         use('hrsh7th/nvim-cmp')
         -- snippet 引擎
@@ -65,24 +60,18 @@ packer.startup({
         use('hrsh7th/cmp-buffer') -- { name = 'buffer' },
         use('hrsh7th/cmp-path') -- { name = 'path' }
         use('hrsh7th/cmp-cmdline') -- { name = 'cmdline' }
-
         -- 常见编程语言代码段
         use('rafamadriz/friendly-snippets')
-
         -- ui
         use('onsails/lspkind-nvim')
         use('tami5/lspsaga.nvim')
-
         -- indent-blankline
         use('lukas-reineke/indent-blankline.nvim')
-
         -- 代码格式化
         -- use("mhartington/formatter.nvim")
         use({ 'jose-elias-alvarez/null-ls.nvim', requires = 'nvim-lua/plenary.nvim' })
-
         -- json 增强插件
         use('b0o/schemastore.nvim')
-
         -- TypeScript 增强
         use({ 'jose-elias-alvarez/nvim-lsp-ts-utils', requires = 'nvim-lua/plenary.nvim' })
     end,
