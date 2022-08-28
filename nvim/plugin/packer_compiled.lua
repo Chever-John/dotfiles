@@ -219,6 +219,11 @@ _G.packer_plugins = {
     path = "/Users/cheverjohn/.local/share/nvim/site/pack/packer/start/project.nvim",
     url = "https://github.com/ahmedkhalf/project.nvim"
   },
+  ["rust-tools.nvim"] = {
+    loaded = true,
+    path = "/Users/cheverjohn/.local/share/nvim/site/pack/packer/start/rust-tools.nvim",
+    url = "https://github.com/simrat39/rust-tools.nvim"
+  },
   ["schemastore.nvim"] = {
     loaded = true,
     path = "/Users/cheverjohn/.local/share/nvim/site/pack/packer/start/schemastore.nvim",

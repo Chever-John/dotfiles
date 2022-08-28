@@ -20,6 +20,9 @@ local servers = {
 
     -- dart
     dartls = require('lsp.config.dart'),
+
+    -- rust
+    rust_analyzer = require('lsp.config.rust'),
 }
 -- 自动安装 Language Servers
 for name, _ in pairs(servers) do
