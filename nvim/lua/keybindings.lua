@@ -223,4 +223,10 @@ pluginKeys.mapTsLSP = function(mapbuf)
     mapbuf('n', 'gi', ':TSLspImportAll<CR>', opt)
 end
 
+pluginKeys.mapToggleTerm = function(toggleterm)
+    vim.keymap.set({ 'n', 't' }, '<leader>ta', toggleterm.toggleA)
+    vim.keymap.set({ 'n', 't' }, '<leader>tb', toggleterm.toggleB)
+    vim.keymap.set({ 'n', 't' }, '<leader>tc', toggleterm.toggleC)
+    vim.keymap.set({ 'n', 't' }, '<leader>tg', toggleterm.toggleG)
+end
 return pluginKeys

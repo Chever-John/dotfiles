@@ -27,6 +27,16 @@ packer.startup({
         use('ahmedkhalf/project.nvim')
         -- treesitter
         use({ 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' })
+        -- toggle a terminal
+        -- use('nvim-toggle-terminal')
+
+        use({
+            'akinsho/toggleterm.nvim',
+            tag = 'v2.*',
+            config = function()
+                require('toggleterm').setup()
+            end,
+        })
 
         -------------------------- Themes --------------------------------------------
         -- Colorschemes

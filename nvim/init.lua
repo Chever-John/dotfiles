@@ -10,7 +10,8 @@ require('plugins')
 -- Theme configuration
 require('colorscheme')
 
--- 插件配置
+-- Optimize experience
+require('plugin-config.toggleterm')
 require('plugin-config.nvim-tree')
 require('plugin-config.bufferline')
 require('plugin-config.lualine')
