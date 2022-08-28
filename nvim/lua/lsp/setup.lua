@@ -14,7 +14,7 @@ local servers = {
     emmet_ls = require('lsp.config.emmet'),
     jsonls = require('lsp.config.json'),
     tsserver = require('lsp.config.ts'),
-    --    gopls = require('lsp.config.go'),
+    gopls = require('lsp.config.gopls'),
 }
 -- 自动安装 Language Servers
 for name, _ in pairs(servers) do
