@@ -75,6 +75,12 @@ packer.startup(function(use)
     -- 代码格式化
     -- use("mhartington/formatter.nvim")
     use({ 'jose-elias-alvarez/null-ls.nvim', requires = 'nvim-lua/plenary.nvim' })
+
+    -- json 增强插件
+    use('b0o/schemastore.nvim')
+
+    -- TypeScript 增强
+    use({ 'jose-elias-alvarez/nvim-lsp-ts-utils', requires = 'nvim-lua/plenary.nvim' })
 end)
 config = {
     -- 并发数限制

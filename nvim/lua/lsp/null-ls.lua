@@ -12,8 +12,6 @@ null_ls.setup({
         -- Formatting ---------------------
         --  brew install shfmt
         formatting.shfmt,
-        -- bash
-        formatting.bashls,
         -- StyLua
         formatting.stylua,
         -- gofmt
@@ -23,7 +21,6 @@ null_ls.setup({
         -- frontend
         formatting.prettier.with({ -- 只比默认配置少了 markdown
             filetypes = {
-                'go',
                 'javascript',
                 'javascriptreact',
                 'typescript',

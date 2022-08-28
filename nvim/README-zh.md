@@ -133,6 +133,17 @@ git clone --depth 1 https://github.com/wbthomason/packer.nvim\
 
 一般到现在的话，一切就都已经结束了。
 
+### 一些额外需要做的事情
+
+安装 `stylua` 等一些格式化工具。
+
+```bash
+brew install shfmt
+brew install stylua
+```
+
+
+
 ## 一些常见插件的介绍以及用法简介
 
 ### vim-airline
