@@ -5,7 +5,7 @@
 首先你肯定已经 `git clone` 好本仓库啦。然后你需要首先软链将 `dotfiles/zsh/.zshrc` 文件到`~/.zshrc`。命令如下：
 
 ```bash
-ln -s /home/john/.dotfiles/zsh/.zshrc ~/.zshrc
+ln -s ~/.dotfiles/zsh/.zshrc ~/.zshrc
 ```
 
 ## 安装 oh-my-zsh && zsh
