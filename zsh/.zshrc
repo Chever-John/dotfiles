@@ -106,7 +106,4 @@ alias kb='kubectl'
 alias dc='docker'
 alias dps='docker ps -a'
 alias dis='docker images -a'
-alias vim='nvim'
-alias vi='nvim'
-alias v='nvim'
 source <(kubectl completion zsh)
