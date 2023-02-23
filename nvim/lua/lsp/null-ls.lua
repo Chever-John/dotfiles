@@ -35,7 +35,6 @@ null_ls.setup({
                 'less',
                 'html',
                 'json',
-                'yaml',
                 'graphql',
             },
             prefer_local = 'node_modules/.bin',

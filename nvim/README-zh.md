@@ -142,7 +142,13 @@ brew install shfmt
 brew install stylua
 ```
 
+如果你是 ubuntu 系统，请使用下面的命令：
 
+```bash
+sudo apt update
+sudo apt install snapd
+sudo snap install shfmt
+```
 
 ## 一些常见插件的介绍以及用法简介
 
