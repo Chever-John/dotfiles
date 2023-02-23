@@ -5,7 +5,7 @@
 首先你肯定已经 `git clone` 好本仓库啦。然后你需要首先软链将 `dotfiles/zsh/.zshrc` 文件到`~/.zshrc`。命令如下：
 
 ```bash
-ln -s ~/.dotfiles/zsh/.zshrc ~/.zshrc
+ln -s $HOME/.dotfiles/zsh/.zshrc ~/.zshrc
 ```
 
 ## 安装 oh-my-zsh && zsh
@@ -39,5 +39,21 @@ git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/p
 git clone git@github.com:zsh-users/zsh-autosuggestions.git ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
 
 source ~/.zshrc
+```
+
+## 别名文件：aliases
+
+本文件夹还保存了一份 `.aliases` 文件，专门用来存储相关别名的设置。
+
+```sh
+ln -s $HOME/.dotfiles/zsh/aliases $HOME/.zsh/aliases
+```
+
+## 环境：envs
+
+`envs` 文件存储了所有的环境变量。
+
+```sh
+ln -s $HOME/.dotfiles/zsh/envs $HOME/.zsh/envs
 ```
 

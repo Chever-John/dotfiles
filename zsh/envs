@@ -1,0 +1,21 @@
+## Golang's envs
+export GOPATH=$HOME/infra/langs/go/GOPATH
+export GOROOT=$HOME/infra/langs/go/go119
+export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
+export GOBIN=$GOPATH/bin
+
+# Environment variables
+export PATH=${PATH}:/usr/local/mysql-8.0.28-macos11-arm64/bin:/Users/cheverjohn/SE/envs/flutter/bin:/Users/cheverjohn/.npm-global/bin:/opt/homebrew/opt/gnu-sed/libexec/gnubin:/Users/cheverjohn/SE/envs/tools
+export GPG_TTY=/dev/ttys000
+gpg-connect-agent updatestartuptty /bye
+unset SSH_AGENT_PID
+export SSH_AUTH_SOCK=/Users/cheverjohn/.gnupg/S.gpg-agent.ssh
+export CLASSPATH=".:/usr/local/lib/antlr-4.10.1-complete.jar:$CLASSPATH"
+export PATH="$PATH":"$HOME/.pub-cache/bin"
+export PATH=:/Users/cheverjohn/SE/envs/flutter/flutter3/bin:$PATH
+export PATH=$PATH:/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin
+# export ANDROID_SDK_ROOT=/Users/cheverjohn/Library/Android/sdk
+
+export ANDROID_HOME=/Users/cheverjohn/Library/Android/sdk
+export PATH=$PATH:$ANDROID_HOME/platform-tools 
+export PATH=$PATH:$ANDROID_HOME/emulator
