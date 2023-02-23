@@ -57,9 +57,13 @@ packer.startup({
         use('EdenEast/nightfox.nvim')
 
         --------------------- LSP --------------------
-        use('williamboman/nvim-lsp-installer')
+        -- use('williamboman/nvim-lsp-installer')
         -- Lspconfig
-        use({ 'neovim/nvim-lspconfig' })
+        -- use({ 'neovim/nvim-lspconfig' })
+        use {
+            "williamboman/nvim-lsp-installer",
+            "neovim/nvim-lspconfig",
+        }
         -- 补全引擎
         use('hrsh7th/nvim-cmp')
         -- snippet 引擎
