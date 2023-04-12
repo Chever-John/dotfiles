@@ -20,7 +20,9 @@ mv dotfiles .dotfiles
 yum install zsh -y
 ## 下面命令中的 root 换成你当前想要生效的用户名
 chsh -s /bin/zsh root
-## 或许你需要退出当前会话
+echo $SHELL
+## 如果 SHELL 没有更改，或许你需要退出当前会话
+
 yum install wget git -y
 wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh
 
@@ -37,7 +39,9 @@ source ~/.zshrc
 sudo apt install zsh -y
 ## 下面命令中的 root 换成你当前想要生效的用户名
 chsh -s /bin/zsh root
-## 或许你需要退出当前会话
+echo $SHELL
+## 如果 SHELL 没有更改，或许你需要退出当前会话
+
 sudo apt install wget -y
 wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh
 
