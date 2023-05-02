@@ -120,7 +120,7 @@ source <(kubectl completion zsh)
 [[ -f "$HOME/.zsh/envs" ]] && source "$HOME/.zsh/envs"
 
 
-source /Users/cheverjohn/antigen.zsh
+source ~/.dotfiles/zsh/antigen.zsh
 antigen use oh-my-zsh
 
 antigen bundle git
