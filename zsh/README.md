@@ -2,12 +2,6 @@
 
 当你开始看这个文件的时候，证明你准备在一台新的主机上安装 zsh 和 oh-my-zsh 这两个伟大的软件啦。所以让我们现在开始吧！
 
-首先你肯定已经 `git clone` 好本仓库啦。然后你需要首先软链将 `dotfiles/zsh/.zshrc` 文件到`~/.zshrc`。命令如下：
-
-```bash
-ln -s $HOME/.dotfiles/zsh/.zshrc ~/.zshrc
-```
-
 ## 安装 oh-my-zsh && zsh
 
 首先安装 oh-my-zsh。
@@ -27,6 +21,16 @@ source ~/.zshrc
 ```bash
 /bin/cp ~/.oh-my-zsh/templates/zshrc.zsh-template ~/.zshrc
 ```
+
+但我坚持还是使用自己的祖传 zsh 呢。你需要首先软链将 `dotfiles/zsh/.zshrc` 文件到`~/.zshrc`。命令如下：
+
+```bash
+ln -s $HOME/.dotfiles/zsh/.zshrc ~/.zshrc
+```
+
+不过需要注意的是，你可能会遇到下面的问题
+
+### 
 
 ## 会有一个问题
 
