@@ -73,6 +73,7 @@ ENABLE_CORRECTION="true"
 plugins=(
 	git
 	zsh-autosuggestions
+	z
 )
 
 source $ZSH/oh-my-zsh.sh
