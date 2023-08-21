@@ -131,11 +131,23 @@ git clone --depth 1 https://github.com/wbthomason/packer.nvim\
  ~/.local/share/nvim/site/pack/packer/start/packer.nvim
 ```
 
+#### 第四步：开始自动安装插件
+
+这一步，我想了想还是额外加上了，因为要把用户当傻瓜（事实上是我自己过了一段时间，发现不知道该咋办了）
+
+其实这个时候，只需要一行命令就可以实现安装了。
+
+```sh
+nvim hello.md
+```
+
 一般到现在的话，一切就都已经结束了。
 
 ### 一些额外需要做的事情
 
 安装 `stylua` 等一些格式化工具。
+
+此时需要注意的是，我是 Fedora 系统的时候，发现什么都不需要下载。
 
 ```bash
 brew install shfmt
