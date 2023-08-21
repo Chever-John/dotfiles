@@ -141,6 +141,8 @@ git clone --depth 1 https://github.com/wbthomason/packer.nvim\
 nvim hello.md
 ```
 
+<img src="../pics/nvim/hello-nvim.png" alt="image-20230822002040385" style="zoom: 33%;" />
+
 一般到现在的话，一切就都已经结束了。
 
 ### 一些额外需要做的事情
