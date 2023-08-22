@@ -18,5 +18,8 @@ export GOPROXY=https://goproxy.cn,direct # 安装 Go 模块时，代理服务器
 export GOPRIVATE=
 export GOSUMDB=off # 关闭校验 Go 依赖包的哈希值
 
-# Alias for quick access
+# Environment variables
+export PATH=$HOME/bin:$GOPATH/bin:$GOROOT/bin:$PATH # 将 $HOME/bin 目录加入到 PATH 变量中
+
+# Go envs
 export GOSRC="$WORKSPACE/golang/src"
