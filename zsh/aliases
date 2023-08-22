@@ -20,6 +20,3 @@ alias code=/usr/local/bin/code
 alias goland=/usr/local/bin/goland
 alias as='open -a /Applications/Android\ Studio.app'
 alias idea='open -a /Applications/IntelliJ\ IDEA.app'
-
-# Some Projects
-alias aic='cd ~/workspace/golang/src/github.com/apisix-ingress-controller'
