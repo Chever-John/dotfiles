@@ -19,9 +19,9 @@ null_ls.setup({
         -- gofmt
         formatting.gofmt,
         -- dart
-        formatting.dart_format,
+        -- formatting.dart_format,
         -- rust
-        formatting.rustfmt,
+        -- formatting.rustfmt,
         -- frontend
         formatting.prettier.with({ -- 只比默认配置少了 markdown
             filetypes = {
