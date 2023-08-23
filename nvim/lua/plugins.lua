@@ -10,6 +10,8 @@ packer.startup({
         use('wakatime/vim-wakatime')
 
         -------------------------- Optimize experience -------------------------------
+        -- nvim-autopairs
+        use("windwp/nvim-autopairs")
         -- nvim-tree
         use({ 'kyazdani42/nvim-tree.lua', requires = 'kyazdani42/nvim-web-devicons' })
         -- bufferline

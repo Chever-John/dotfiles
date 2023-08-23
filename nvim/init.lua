@@ -10,6 +10,9 @@ require('plugins')
 -- Theme configuration
 require('colorscheme')
 
+-- Plugin configuration
+require("plugin-config.nvim-autopairs")
+
 -- Optimize experience
 require('plugin-config.toggleterm')
 require('plugin-config.nvim-tree')
