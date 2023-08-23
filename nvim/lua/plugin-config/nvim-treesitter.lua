@@ -8,19 +8,11 @@ treesitter.setup({
     -- 安装 language parser
     -- :TSInstallInfo 命令查看支持的语言
     ensure_installed = {
-        'yaml',
+       -- 'yaml',
         'go',
-        'bash',
-        'json',
-        'html',
-        'css',
-        'vim',
+       -- 'bash',
         'lua',
-        'javascript',
-        'typescript',
-        'tsx',
-        'dockerfile',
-        'markdown',
+       -- 'markdown',
     },
     -- 启用代码高亮模块
     highlight = {
