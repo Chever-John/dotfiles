@@ -61,8 +61,8 @@ packer.startup({
         -- Lspconfig
         -- use({ 'neovim/nvim-lspconfig' })
         use {
-            "williamboman/nvim-lsp-installer",
-            "neovim/nvim-lspconfig",
+            "williamboman/mason.nvim",
+            "williamboman/mason-lspconfig.nvim",
         }
         -- 补全引擎
         use('hrsh7th/nvim-cmp')

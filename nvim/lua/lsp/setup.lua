@@ -1,4 +1,55 @@
-local lsp_installer = require('nvim-lsp-installer')
+local status, mason = pcall(require, "mason")
+if not status then
+  vim.notify("没有找到 mason")
+  return
+end
+
+local status, mason_config = pcall(require, "mason-lspconfig")
+if not status then
+  vim.notify("没有找到 mason-lspconfig")
+  return
+end
+
+local status, lspconfig = pcall(require, "lspconfig")
+if not status then
+  vim.notify("没有找到 lspconfig")
+  return
+end
+
+-- :h mason-default-settings
+require("mason").setup({
+  ui = {
+    icons = {
+      package_installed = "✓",
+      package_pending = "➜",
+      package_uninstalled = "✗",
+    },
+  },
+})
+
+-- mason-lspconfig uses the `lspconfig` server names in the APIs it exposes - not `mason.nvim` package names
+-- https://github.com/williamboman/mason-lspconfig.nvim/blob/main/doc/server-mapping.md
+require("mason-lspconfig").setup({
+  -- 确保安装，根据需要填写
+  ensure_installed = {
+    "sumneko_lua",
+    "tsserver",
+    "tailwindcss",
+    "bashls",
+    "cssls",
+    "dockerls",
+    "emmet_ls",
+    "html",
+    "jsonls",
+    "pyright",
+    "rust_analyzer",
+    "taplo",
+    "yamlls",
+    "gopls",
+  },
+})
+
+
 
 -- 安装列表
 -- { key: 语言 value: 配置文件 }
@@ -18,31 +69,24 @@ local servers = {
     -- go
     gopls = require('lsp.config.gopls'),
 
+    -- docker
+    -- dockerls = require("lsp.config.docker"),
+
     -- dart
     -- dartls = require('lsp.config.dart'),
 
     -- rust
     -- rust_analyzer = require('lsp.config.rust'),
 }
--- 自动安装 Language Servers
-for name, _ in pairs(servers) do
-    local server_is_found, server = lsp_installer.get_server(name)
-    if server_is_found then
-        if not server:is_installed() then
-            print('Installing ' .. name)
-            server:install()
-        end
-    end
+
+for name, config in pairs(servers) do
+  if config ~= nil and type(config) == "table" then
+    -- 自定义初始化配置文件必须实现on_setup 方法
+    config.on_setup(lspconfig[name])
+  else
+    -- 使用默认参数
+    lspconfig[name].setup({})
+  end
 end
 
-lsp_installer.on_server_ready(function(server)
-    local config = servers[server.name]
-    if config == nil then
-        return
-    end
-    if config.on_setup then
-        config.on_setup(server)
-    else
-        server:setup({})
-    end
-end)
+require("lsp.ui")
