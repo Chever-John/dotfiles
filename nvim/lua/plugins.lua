@@ -80,7 +80,8 @@ packer.startup({
         use('rafamadriz/friendly-snippets')
         -- ui
         use('onsails/lspkind-nvim')
-        use('tami5/lspsaga.nvim')
+        -- use('tami5/lspsaga.nvim')
+        use('glepnir/lspsaga.nvim')
         -- indent-blankline
         use('lukas-reineke/indent-blankline.nvim')
         -- 代码格式化

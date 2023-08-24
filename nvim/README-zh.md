@@ -317,3 +317,15 @@ python3 -m pip install --user --upgrade pynvim
 ```
 
 然后就解决问题了。
+
+##### nvim-treesitter 最新更新遇到的问题
+
+问题的简要来看如下
+
+```bash
+Highlights broken after update with query: invalid structure #3092
+
+```
+
+直接在官方的 [issues](https://github.com/nvim-treesitter/nvim-treesitter/issues/3092) 中找到解决办法。
+
