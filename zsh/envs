@@ -7,6 +7,9 @@ export WORKSPACE="$HOME/workspace" # 设置工作目录
 # Configure for git
 export PATH=/usr/local/libexec/git-core:$PATH
 
+# Configure for latex
+export LATEX_ENV=$HOME/Infra/Softwares/texlive/2023/bin/universal-darwin
+
 ## Golang's envs
 export GOVERSION=go1.19.8 # Go 版本设置
 export GO_INSTALL_DIR=$HOME/infra/dev-env/langs/go # Go 安装目录
@@ -19,7 +22,9 @@ export GOPRIVATE=
 export GOSUMDB=off # 关闭校验 Go 依赖包的哈希值
 
 # Environment variables
-export PATH=$HOME/bin:$GOPATH/bin:$GOROOT/bin:$PATH # 将 $HOME/bin 目录加入到 PATH 变量中
+export PATH=$HOME/bin:$GOPATH/bin:$GOROOT/bin:$LATEX_ENV:$PATH # 将 $HOME/bin 目录加入到 PATH 变量中
 
 # Go envs
 export GOSRC="$WORKSPACE/golang/src"
+
+export GPG_TTY=$(tty)
