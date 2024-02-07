@@ -6,7 +6,9 @@ end
 
 -- 列表操作快捷键
 local list_keys = require('keybindings').nvimTreeList
+
 nvim_tree.setup({
+    -- on_attach = my_on_attach(),
     -- 不显示 git 状态图标
     git = {
         enable = false,
@@ -28,17 +30,25 @@ nvim_tree.setup({
         -- 也可以 'right'
         side = 'left',
         -- 隐藏根目录
-        hide_root_folder = false,
+        -- hide_root_folder = false,
+
         -- 自定义列表中快捷键
-        mappings = {
-            custom_only = false,
-            list = list_keys,
-        },
+        -- TODO: https://github.com/nvim-tree/nvim-tree.lua/blob/master/doc/nvim-tree-lua.txt
+        -- 在上面的文档里搜索 ｜nvim-tree-mappings-default| are applied by default however you may customise
+        -- 这一块有相关配置
+        -- mappings = {
+        --    custom_only = false,
+        --    list = list_keys,
+        -- },
         -- 不显示行数
         number = false,
         relativenumber = false,
         -- 显示图标
         signcolumn = 'yes',
+    },
+    renderer = {
+        group_empty = true,
+        root_folder_label = ":~:s?$?/..?",
     },
     actions = {
         open_file = {
