@@ -40,6 +40,16 @@ packer.startup({
             end,
         })
 
+        --------------------- Special Function ---------------------------------------
+        use({
+            "kawre/leetcode.nvim",
+            requires = {
+              "nvim-telescope/telescope.nvim",
+              "nvim-lua/plenary.nvim",
+              "MunifTanjim/nui.nvim",
+            }
+        })
+
         -------------------------- Themes --------------------------------------------
         -- Colorschemes
         -- Description: This section focuses on the themes of nvim.
