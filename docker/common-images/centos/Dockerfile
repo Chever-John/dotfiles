@@ -9,5 +9,5 @@ RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
 RUN yum update -y && \
       yum install -y epel-release && \
       yum install -y netperf && \
-      yum install -y hping3 traceroute tcpdump && \
+      yum install -y hping3 traceroute tcpdump bind-utils telnet && \
       yum clean all
