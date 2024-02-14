@@ -329,3 +329,8 @@ Highlights broken after update with query: invalid structure #3092
 
 直接在官方的 [issues](https://github.com/nvim-treesitter/nvim-treesitter/issues/3092) 中找到解决办法。
 
+## 插件配置
+
+这部分主要讲一下我后期维护的插件配置。
+
+[leetcode.nvim](docs/plugins/leetcode-nvim-zh.md)：用于 leetcode 刷题的一个插件。
