@@ -34,9 +34,13 @@ leetcode.setup({
 
     cn = {
         enabled = true, ---@type boolean
+        translator = false, ---@type boolean
+        translate_problems = false, ---@type boolean
     },
 
     logging = true, ---@type boolean
+
+    --- image_support = true, ---@type boolean 将此设置为 true 以禁用问题描述的换行
 
     
 })
