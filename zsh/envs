@@ -6,6 +6,7 @@ export WORKSPACE="$HOME/workspace" # 设置工作目录
 
 # Configure for git
 export PATH=/usr/local/libexec/git-core:$PATH
+export PATH=/opt/homebrew/bin:$PATH
 
 # Configure for latex
 export LATEX_ENV=$HOME/Infra/Softwares/texlive/2023/bin/universal-darwin
