@@ -6,6 +6,7 @@ export WORKSPACE="$HOME/workspace" # 设置工作目录
 
 # Configure for git
 export PATH=/usr/local/libexec/git-core:$PATH
+export PATH=/opt/homebrew/bin:$PATH
 
 ## Golang's envs
 export GOVERSION=go1.19.8 # Go 版本设置
