@@ -20,3 +20,6 @@ alias code=/usr/local/bin/code
 alias goland=/usr/local/bin/goland
 alias as='open -a /Applications/Android\ Studio.app'
 alias idea='open -a /Applications/IntelliJ\ IDEA.app'
+
+# Customized aliases settings for life-related matters.
+alias weather='curl wttr.in/nanjing'
