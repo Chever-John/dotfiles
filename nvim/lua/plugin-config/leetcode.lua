@@ -34,8 +34,8 @@ leetcode.setup({
 
     cn = {
         enabled = true, ---@type boolean
-        translator = true, ---@type boolean
-        translate_problems = true, ---@type boolean
+        translator = false, ---@type boolean
+        translate_problems = false, ---@type boolean
     },
 
     logging = true, ---@type boolean
