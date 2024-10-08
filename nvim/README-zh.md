@@ -334,3 +334,10 @@ Highlights broken after update with query: invalid structure #3092
 这部分主要讲一下我后期维护的插件配置。
 
 [leetcode.nvim](docs/plugins/leetcode-nvim-zh.md)：用于 leetcode 刷题的一个插件。
+
+## 乱码问题
+
+我在使用 vscode 打开这个项目的时候，很多都是乱码图标，其实只需要你上 https://www.nerdfonts.com/font-downloads 这个网站，
+然后下载一个适配的字体即可，目前我常用的字体为Nerdfont，经过测试这款字体都可以。
+
+
