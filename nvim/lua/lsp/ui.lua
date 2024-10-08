@@ -1,10 +1,19 @@
 vim.diagnostic.config({
+  -- 设置成 true 表示启用虚拟文本，这样你可以在代码行的末尾看到错误或警告信息。
   virtual_text = true,
+  -- 设置成 true 表示启用标志 signs，这样你可以在行号列看到错误或警告的图标。
   signs = true,
   -- 在输入模式下也更新提示，设置为 true 也许会影响性能
   update_in_insert = true,
 })
-local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
+local signs = { 
+  Error = "🔥", 
+  Warn = "⚠️", 
+  Hint = "💡", 
+  Info = "ℹ️",
+  Custom = "🌟"  -- 添加一个自定义类型
+}
+
 for type, icon in pairs(signs) do
   local hl = "DiagnosticSign" .. type
   vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
