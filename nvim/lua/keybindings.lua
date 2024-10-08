@@ -49,6 +49,12 @@ map('t', '<A-j>', [[ <C-\><C-N><C-w>j ]], opt)
 map('t', '<A-k>', [[ <C-\><C-N><C-w>k ]], opt)
 map('t', '<A-l>', [[ <C-\><C-N><C-w>l ]], opt)
 
+-- 10. 上下滚动浏览
+map('n', '<C-j>', "4j", opt)
+map('n', '<C-k>', "4k", opt)
+map('n', '<C-d>', "9j", opt)
+map('n', '<C-u>', "9k", opt)
+
 -- 插件快捷键
 local pluginKeys = {}
 
