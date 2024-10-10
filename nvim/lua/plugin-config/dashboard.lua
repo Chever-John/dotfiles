@@ -4,66 +4,44 @@ if not status then
     return
 end
 
-db.custom_footer = {
-    '',
-    '',
-    'https://github.com/nshen/learn-neovim-lua',
-}
+-- 获取宜忌信息
+local cmd = "node -e \"console.log(require('${HOME}/.config/nvim/scripts/yiji.js').getTodayYiJi())\""
+local handle = io.popen(cmd)
+local result = handle:read("*a")
+handle:close()
+local yi = string.match(result, "yi: '(.*)',")
 
-db.custom_center = {
-    {
-        icon = '  ',
-        desc = 'Projects                            ',
-        action = 'Telescope projects',
-    },
-    {
-        icon = '  ',
-        desc = 'Recently files                      ',
-        action = 'Telescope oldfiles',
-    },
-    {
-        icon = '  ',
-        desc = 'Edit keybindings                    ',
-        action = 'edit ~/.config/nvim/lua/keybindings.lua',
-    },
-    {
-        icon = '  ',
-        desc = 'Edit Projects                       ',
-        action = 'edit ~/.local/share/nvim/project_nvim/project_history',
-    },
-    -- {
-    --   icon = "  ",
-    --   desc = "Edit .bashrc                        ",
-    --   action = "edit ~/.bashrc",
-    -- },
-    -- {
-    --   icon = "  ",
-    --   desc = "Change colorscheme                  ",
-    --   action = "ChangeColorScheme",
-    -- },
-    -- {
-    --   icon = "  ",
-    --   desc = "Edit init.lua                       ",
-    --   action = "edit ~/.config/nvim/init.lua",
-    -- },
-    -- {
-    --   icon = "  ",
-    --   desc = "Find file                           ",
-    --   action = "Telescope find_files",
-    -- },
-    -- {
-    --   icon = "  ",
-    --   desc = "Find text                           ",
-    --   action = "Telescopecope live_grep",
-    -- },
-}
+local db = require("dashboard")
 
-db.custom_header = {
-    [[]],
-    [[  ██████╗██╗  ██╗███████╗██╗   ██╗███████╗██████╗      ██╗ ██████╗ ██╗  ██╗███╗   ██╗ ]],
-    [[ ██╔════╝██║  ██║██╔════╝██║   ██║██╔════╝██╔══██╗     ██║██╔═══██╗██║  ██║████╗  ██║]],
-    [[ ██║     ███████║█████╗  ██║   ██║█████╗  ██████╔╝     ██║██║   ██║███████║██╔██╗ ██║]],
-    [[ ██║     ██╔══██║██╔══╝  ╚██╗ ██╔╝██╔══╝  ██╔══██╗██   ██║██║   ██║██╔══██║██║╚██╗██║]],
-    [[ ╚██████╗██║  ██║███████╗ ╚████╔╝ ███████╗██║  ██║╚█████╔╝╚██████╔╝██║  ██║██║ ╚████║]],
-    [[  ╚═════╝╚═╝  ╚═╝╚══════╝  ╚═══╝  ╚══════╝╚═╝  ╚═╝ ╚════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═══╝]],
-}
+db.setup({
+    theme = 'hyper',
+    config = {
+      week_header = {
+       enable = true,
+       concat = yi, -- 将宜忌信息添加到 week_header 中
+      },
+      shortcut = {
+        { desc = '󰊳 Update', group = '@property', action = 'Lazy update', key = 'u' },
+        {
+          icon = ' ',
+          icon_hl = '@variable',
+          desc = 'Files',
+          group = 'Label',
+          action = 'Telescope find_files',
+          key = 'f',
+        },
+        {
+          desc = ' Apps',
+          group = 'DiagnosticHint',
+          action = 'Telescope app',
+          key = 'a',
+        },
+        {
+          desc = ' dotfiles',
+          group = 'Number',
+          action = 'Telescope dotfiles',
+          key = 'd',
+        },
+      },
+    },
+})
