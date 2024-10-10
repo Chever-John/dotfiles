@@ -1,4 +1,4 @@
-const { Lunar } = require("./lunar.min.js");
+const { Lunar } = require("./lunar");
 const d = Lunar.fromDate(new Date());
 
 const yi = d.getDayYi().join(" ");
