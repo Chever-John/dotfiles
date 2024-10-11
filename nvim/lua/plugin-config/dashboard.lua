@@ -14,7 +14,7 @@ local function getYiJi()
   local yi = result:match("yi: '(.*)',")
   local ji = result:match("ji: '(.-)'")
 
-  return '宜: ' .. (yi or ""), '忌: ' .. (ji or "")
+  return ' 宜: ' .. (yi or ""), ' 忌: ' .. (ji or "")
 end
 
 local yi_with_Chinese, ji_with_Chinese = getYiJi()
@@ -22,6 +22,8 @@ local yi_with_Chinese, ji_with_Chinese = getYiJi()
 require("dashboard").setup({
   theme = 'hyper',
   config = {
+    packages = {enable = false},
+    mru = { limit = 20, cwd_only = false },
       week_header = {
           enable = true,
           append = {
@@ -30,7 +32,7 @@ require("dashboard").setup({
           }
       },
       shortcut = {
-        { 
+        {
           desc = '󰊳 Update',
           group = '@property',
           action = 'PackerSync',
@@ -57,7 +59,7 @@ require("dashboard").setup({
           key = 'd',
         },
         {
-          desc = '  keybindings',
+          desc = ' Keybindings',
           group = 'Number',
           action = 'edit ~/.config/nvim/lua/keybindings.lua',
           key = 'k',
