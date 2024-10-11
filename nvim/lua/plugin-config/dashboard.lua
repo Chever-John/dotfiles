@@ -5,23 +5,37 @@ if not status then
 end
 
 -- 获取宜忌信息
-local cmd = "node -e \"console.log(require('${HOME}/.config/nvim/scripts/yiji.js').getTodayYiJi())\""
-local handle = io.popen(cmd)
-local result = handle:read("*a")
-handle:close()
-local yi = string.match(result, "yi: '(.*)',")
+local function getYiJi()
+  local cmd = "node -e \"console.log(require('${HOME}/.config/nvim/scripts/yiji.js').getTodayYiJi())\""
+  local handle = io.popen(cmd)
+  local result = handle:read("*a")
+  handle:close()
 
-local db = require("dashboard")
+  local yi = result:match("yi: '(.*)',")
+  local ji = result:match("ji: '(.-)'")
 
-db.setup({
-    theme = 'hyper',
-    config = {
+  return '宜: ' .. (yi or ""), '忌: ' .. (ji or "")
+end
+
+local yi_with_Chinese, ji_with_Chinese = getYiJi()
+
+require("dashboard").setup({
+  theme = 'hyper',
+  config = {
       week_header = {
-       enable = true,
-       concat = yi, -- 将宜忌信息添加到 week_header 中
+          enable = true,
+          append = {
+              yi_with_Chinese,
+              ji_with_Chinese,
+          }
       },
       shortcut = {
-        { desc = '󰊳 Update', group = '@property', action = 'Lazy update', key = 'u' },
+        { 
+          desc = '󰊳 Update',
+          group = '@property',
+          action = 'PackerSync',
+          key = 'u',
+        },
         {
           icon = ' ',
           icon_hl = '@variable',
@@ -42,6 +56,12 @@ db.setup({
           action = 'Telescope dotfiles',
           key = 'd',
         },
+        {
+          desc = '  keybindings',
+          group = 'Number',
+          action = 'edit ~/.config/nvim/lua/keybindings.lua',
+          key = 'k',
+        }
       },
     },
 })
