@@ -1,23 +1,12 @@
-local status, mason = pcall(require, "mason")
-if not status then
+-------------------------------- Mason --------------------------------
+local mason_status, mason = pcall(require, "mason")
+if not mason_status then
   vim.notify("没有找到 mason")
   return
 end
 
-local status, mason_config = pcall(require, "mason-lspconfig")
-if not status then
-  vim.notify("没有找到 mason-lspconfig")
-  return
-end
-
-local status, lspconfig = pcall(require, "lspconfig")
-if not status then
-  vim.notify("没有找到 lspconfig")
-  return
-end
-
 -- :h mason-default-settings
-require("mason").setup({
+mason.setup({
   ui = {
     icons = {
       package_installed = "✓",
@@ -27,17 +16,32 @@ require("mason").setup({
   },
 })
 
+-------------------------------- Mason LSPConfig --------------------------------
+local mason_lspconfig_status, mason_lspconfig = pcall(require, "mason-lspconfig")
+if not mason_lspconfig_status then
+  vim.notify("没有找到 mason-lspconfig")
+  return
+end
+
 -- mason-lspconfig uses the `lspconfig` server names in the APIs it exposes - not `mason.nvim` package names
 -- https://github.com/williamboman/mason-lspconfig.nvim/blob/main/doc/server-mapping.md
-require("mason-lspconfig").setup({
+mason_lspconfig.setup({
   -- 确保安装，根据需要填写
   ensure_installed = {
     "bashls",
     "yamlls",
     "gopls",
+    "golangci_lint_ls",
   },
+  automatic_installation = true -- not the same as ensure_installed
 })
 
+-------------------------------- LSPConfig --------------------------------
+local lspconfig_status, lspconfig = pcall(require, "lspconfig")
+if not lspconfig_status then
+  vim.notify("load lspconfig failed")
+  return
+end
 
 
 -- 安装列表
@@ -45,7 +49,7 @@ require("mason-lspconfig").setup({
 -- key 必须为下列网址列出的名称
 -- https://github.com/williamboman/nvim-lsp-installer#available-lsps
 local servers = {
-    -- sumneko_lua = require('lsp.config.lua'), -- lua/lsp/config/lua.lua
+    sumneko_lua = require('lsp.config.lua'),
     bashls = require('lsp.config.bash'),
 
     -- frontend
@@ -69,11 +73,14 @@ local servers = {
 }
 
 for name, config in pairs(servers) do
+  local server_is_found, server = mason.get_server(name)
+  
   if config ~= nil and type(config) == "table" then
     -- 自定义初始化配置文件必须实现on_setup 方法
     config.on_setup(lspconfig[name])
   else
     -- 使用默认参数
+    vim.notify("use default config for " .. name)
     lspconfig[name].setup({})
   end
 end
