@@ -19,7 +19,7 @@ end
 
 local yi_with_Chinese, ji_with_Chinese = getYiJi()
 
-require("dashboard").setup({
+db.setup({
   theme = 'hyper',
   config = {
     packages = {enable = false},
