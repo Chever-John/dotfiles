@@ -62,7 +62,7 @@ local pluginKeys = {}
 -- 查找文件
 map('n', '<C-p>', ':Telescope find_files<CR>', opt)
 -- 全局搜索
-map('n', '<C-f>', ':Telescope live_grep<CR>', opt)
+map('n', '<C-g>', ':Telescope live_grep<CR>', opt)
 
 -- bufferline
 -- 左右Tab切换，注意 macOS 中好像并不能使用 C-h，因为 macOS 好像没有默认的 Ctrl 键
