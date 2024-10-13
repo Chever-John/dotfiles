@@ -73,16 +73,16 @@ packer.startup({
 
         --------------------- LSP --------------------
         --- 首先 lsp-installer 是官方的
-        -- use('williamboman/nvim-lsp-installer')
+        use('williamboman/nvim-lsp-installer')
         
         -- Lspconfig 这个也是官方的
-        -- use({ 'neovim/nvim-lspconfig' })
+        use({ 'neovim/nvim-lspconfig' })
 
         -- mason lsp 包管理器
-        use {
-            "williamboman/mason.nvim",
-            "williamboman/mason-lspconfig.nvim",
-        }
+        -- use {
+        --    "williamboman/mason.nvim",
+        --    "williamboman/mason-lspconfig.nvim",
+        -- }
 
         -- formatting 
 

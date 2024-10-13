@@ -352,3 +352,7 @@ This part mainly discusses my later maintenance of the plugin configuration.
 
 When I use vscode to open this project, many icons are garbled. In fact, you just need to go to https://www.nerdfonts.com/font-downloads, and download a compatible font. Currently, my commonly used font is Nerdfont, which has been tested to work.
 
+## TODO
+
+- [ ] : When change the lua ls from `sumneko_lua` to `lua_ls`, then there are some problem waiting for me to solve.
+

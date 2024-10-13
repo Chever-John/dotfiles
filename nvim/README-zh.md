@@ -347,3 +347,28 @@ Highlights broken after update with query: invalid structure #3092
 
 我在使用 vscode 打开这个项目的时候，很多都是乱码图标，其实只需要你上 https://www.nerdfonts.com/font-downloads 这个网站，
 然后下载一个适配的字体即可，目前我常用的字体为Nerdfont，经过测试这款字体都可以。
+
+## Changelog
+
+### 2024 年 10 月 13 日
+
+我发现原本的 lua 插件失效了，sumneko_lua 将 deprecated，我们需要使用最新的 lua_ls。
+
+![image-20241013153129325](assets/image-20241013153129325.png)
+
+所以我今天主要是将这个插件更新。
+
+我所做的操作也只是如下：
+
+```lua
+local servers = {
+  -- sumneko_lua = require("lsp.config.lua"), -- lua/lsp/config/lua.lua
+  lua_ls = require("lsp.config.lua"),
+}
+```
+
+然后可以发现，我原先的一些自动提示啦，一些好用的功能都用不了了。这肯定是因为 lua_ls 和 sumneko_lua 之间的配置问题。我想我需要进行一些研究
+
+## TODO
+
+- [ ] 修复 lua lsp 的问题。lua 的 ls 从 sumneko_lua 到 lua_ls，这中间有一些问题亟待解决。
