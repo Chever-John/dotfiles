@@ -1,5 +1,7 @@
 # NeoVim
 
+[English](README.md)
+
 我更新了最全套的
 
 ## Neovim（Lua 版本）
@@ -89,11 +91,15 @@ https://github.com/ryanoasis/nerd-fonts/tree/master/patched-fonts/FiraCode/Regul
 总而言之，不管你是什么系统，macOS 还是 ubuntu，最后一切的最开始一定是要有 neovim 的。
 
 ```bash
-➜  ~ nvim --version
-NVIM v0.7.0
+╰─[:(] % nvim --version
+NVIM v0.9.5
 Build type: Release
-LuaJIT 2.1.0-beta3
-Compiled by brew@HMBRW-A-001-M1-004.local
+LuaJIT 2.1.1710088188
+
+   system vimrc file: "$VIM/sysinit.vim"
+  fall-back for $VIM: "/opt/homebrew/Cellar/neovim/0.9.5/share/nvim"
+
+Run :checkhealth for more info
 ```
 
 ##### 拉取项目
@@ -186,7 +192,9 @@ GitHub: <https://github.com/ctrlpvim/ctrlp.vim>
 
 这是一个注释用的插件。具体操作流程如下 gif 图所示：
 
-![shenmegui](https://cdn.mr8god.cn/img/Kapture2022-08-07123208.gif)
+```shell
+链接已失效
+```
 
 ### vim-gitgutter
 
@@ -207,8 +215,6 @@ ln -s /nvim/init.vim ~/.config/nvim/init.vim
 ### 如何更新 Neovim
 
 我想，当我某一天使用 nvim 打开某个文件夹，这丫的，居然给我爆出这个错误，错误如下图所示：
-
-![错误报错图](https://cdn.mr8god.cn/img/error_image_2022-08-07_10-44-38.png)
 
 我就知道我摊上事了，首先汇报我的系统版本：
 
@@ -335,9 +341,9 @@ Highlights broken after update with query: invalid structure #3092
 
 [leetcode.nvim](docs/plugins/leetcode-nvim-zh.md)：用于 leetcode 刷题的一个插件。
 
+我的整体美化思路，文档参见[这里](docs/plugins/beautify.md)
+
 ## 乱码问题
 
 我在使用 vscode 打开这个项目的时候，很多都是乱码图标，其实只需要你上 https://www.nerdfonts.com/font-downloads 这个网站，
 然后下载一个适配的字体即可，目前我常用的字体为Nerdfont，经过测试这款字体都可以。
-
-
