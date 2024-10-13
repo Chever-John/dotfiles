@@ -352,6 +352,8 @@ Highlights broken after update with query: invalid structure #3092
 
 ### 2024 年 10 月 13 日
 
+#### 更新 lua ls 但是没有成功
+
 我发现原本的 lua 插件失效了，sumneko_lua 将 deprecated，我们需要使用最新的 lua_ls。
 
 ![image-20241013153129325](assets/image-20241013153129325.png)
@@ -367,7 +369,21 @@ local servers = {
 }
 ```
 
-然后可以发现，我原先的一些自动提示啦，一些好用的功能都用不了了。这肯定是因为 lua_ls 和 sumneko_lua 之间的配置问题。我想我需要进行一些研究
+然后可以发现，我原先的一些自动提示啦，一些好用的功能都用不了了。这肯定是因为 lua_ls 和 sumneko_lua 之间的配置问题。我想我需要进行一些研究。
+
+#### 移除 lunar.js
+
+我最近在搞好玩的 `宜忌`，如下：
+
+![image-20241013154223048](assets/image-20241013154223048.png)
+
+然后我采取的方案很简陋，直接将 lunar.js 下载到本地，然后写了个 node 的脚本实现，但这直接导致了我的项目中 js 代码超标。所以就很难崩。如下图所示：
+
+![image-20241013154340316](assets/image-20241013154340316.png)
+
+这样我就觉得不好玩啦！！！
+
+我要移除他！
 
 ## TODO
 
