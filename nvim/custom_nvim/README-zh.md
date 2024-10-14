@@ -121,7 +121,7 @@ git clone git@github.com:Chever-John/dotfiles.git
 所以此处选择直接使用软链接，在 `~/.config` 中软链接一个 `nvim` 文件夹。软链接命令如下：
 
 ```bash
-ln -s ~/.dotfiles/nvim ~/.config/nvim
+ln -s ~/.dotfiles/nvim/custom_nvim ~/.config/nvim
 ```
 
 #### 第三步：将一些依赖 or 插件下载
