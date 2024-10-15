@@ -1,0 +1,3 @@
+[submodule "nvim/InsisVim"]
+	path = nvim/InsisVim
+	url = git@github.com:Chever-John/InsisVim.git

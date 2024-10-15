@@ -244,4 +244,5 @@ dist
 nvim/plugin/
 zsh/aliases
 zsh/envs
-nvim/scripts/lunar.js
+nvim/custom_nvim/scripts/lunar.js
+nvim/pack/github/start/copilot.vim
