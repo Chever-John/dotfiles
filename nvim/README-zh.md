@@ -2,18 +2,22 @@
 
 又爱又恨啊，被我自己之前的 [版本](./custom_nvim/README-zh.md) 给坑了，所以这次我决定重新来一遍。
 
-总结了之前的问题，我过于纠结自己写一套完美的 lua 的 nvim 配置，从而导致很多情况下，没有能够及时跟进，所以我决定尝试使用成熟的 nvim 项目。我决定尝试：
+总结了之前的问题，我过于纠结自己写一套完美的 lua 的 nvim 配置，从而导致很多情况下，没有能够及时跟进，所以我决定尝试使用成熟的 nvim 项目。
+
+## 实用当前的 neovim 的版本
+
+我决定尝试：
 
 1. [AstroNvim](https://docs.astronvim.com/);
 2. [InsisVim](https://github.com/nshen/InsisVim)
 
 目前先搞这两个，让我们开始吧！
 
-## 首先试用一下 AstroNvim
+### AstroNvim
 
 一切根据官网配置，目前我搞了一套配置在这个文件当前目录下的 `astronvim` 文件夹中。
 
-### 安装
+#### 安装
 
 首先复制配置，命令如下：
 
@@ -38,6 +42,20 @@ nvim
 ```
 
 当然，我自己在 dotfiles 中也有，可以使用命令如下：
+
+```shell
+ln -s ~/.dotfiles/nvim/InsisVim ~/.config/nvim
+```
+
+### InsisVim
+
+这个项目，我选择 fork 了 [原项目](https://github.com/nshen/InsisVim)。然后作为本项目的 submodule。
+
+本项目在整个 dotfiles 的目录为 `nvim/InsisVim`。
+
+#### 安装
+
+首先复制配置，命令如下：
 
 ```shell
 ln -s ~/.dotfiles/nvim/InsisVim ~/.config/nvim
