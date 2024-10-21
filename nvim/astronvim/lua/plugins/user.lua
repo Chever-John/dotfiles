@@ -56,7 +56,7 @@ return {
     config = function(plugin, opts)
       require "astronvim.plugins.configs.nvim-autopairs" (plugin, opts) -- include the default astronvim config that calls the setup call
       -- add more custom autopairs configuration such as custom rules
-      local npairs = require "nvim-autopairs"
+      local npairs = require "nvim.CustomVim.lua.plugin-config.nvim-autopairs"
       local Rule = require "nvim-autopairs.rule"
       local cond = require "nvim-autopairs.conds"
       npairs.add_rules(
