@@ -14,12 +14,9 @@ return {
     highlights = {
       init = { -- this table overrides highlights in all themes
         -- Normal = { bg = "#000000" },
-        Normal = {},
-        NormalNC = { bg = "NONE", ctermbg = "NONE", bg_alpha = 54 },
       },
       astrodark = { -- a table of overrides/changes when applying the astrotheme theme
         -- Normal = { bg = "#000000" },
-        Normal = { bg = "NONE", ctermbg = "NONE", bg_alpha = 54 },
       },
     },
     -- Icons can be configured throughout the interface
