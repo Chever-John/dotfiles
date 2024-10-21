@@ -248,3 +248,5 @@ nvim/custom_nvim/scripts/lunar.js
 nvim/pack/github/start/copilot.vim
 
 scripts/yiji/lunar.js
+
+nvim/CustomVim/scripts/lunar.js
