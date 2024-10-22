@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # 定义选项
-options=("InsisVim" "astrovim" "customvim")
+options=("InsisVim" "AstroNvim" "CustomVim")
 
 # 显示提示信息
 echo "准备将当前使用的 nvim，从以下选项中选择迁移到目标配置："
 echo "1. InsisVim"
-echo "2. astrovim"
-echo "3. customvim"
+echo "2. AstroNvim"
+echo "3. CustomVim"
 
 # 获取用户输入
 read -p "请输入源配置的数字 (1, 2, 3): " source_choice
