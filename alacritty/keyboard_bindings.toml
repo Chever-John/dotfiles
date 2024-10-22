@@ -1,0 +1,116 @@
+[[keyboard.bindings]]
+key = "Comma"
+mods = "Command"
+chars = "\u0002,"
+
+[[keyboard.bindings]]
+key = "K"
+mods = "Command"
+chars = "\u0002s"
+
+[[keyboard.bindings]]
+key = "Key1"
+mods = "Command"
+chars = "\u00021"
+
+[[keyboard.bindings]]
+key = "Key2"
+mods = "Command"
+chars = "\u00022"
+
+[[keyboard.bindings]]
+key = "Key3"
+mods = "Command"
+chars = "\u00023"
+
+[[keyboard.bindings]]
+key = "Key4"
+mods = "Command"
+chars = "\u00024"
+
+[[keyboard.bindings]]
+key = "Key5"
+mods = "Command"
+chars = "\u00025"
+
+[[keyboard.bindings]]
+key = "Key6"
+mods = "Command"
+chars = "\u00026"
+
+[[keyboard.bindings]]
+key = "Key7"
+mods = "Command"
+chars = "\u00027"
+
+[[keyboard.bindings]]
+key = "Key8"
+mods = "Command"
+chars = "\u00028"
+
+[[keyboard.bindings]]
+key = "Key9"
+mods = "Command"
+chars = "\u00029"
+
+[[keyboard.bindings]]
+key = "L"
+mods = "Command"
+chars = "\u0002L"
+
+[[keyboard.bindings]]
+key = "LBracket"
+mods = "Command"
+chars = "\u0002["
+
+[[keyboard.bindings]]
+key = "LBracket"
+mods = "Command|Shift"
+chars = "\u0002p"
+
+[[keyboard.bindings]]
+key = "D"
+mods = "Command"
+chars = '\x02\x63'
+
+[[keyboard.bindings]]
+key = "D"
+mods = "Command|Shift"
+chars = '\x02\x22'
+
+[[keyboard.bindings]]
+key = "W"
+mods = "Command|Shift"
+chars = "\u0002d"
+
+[[keyboard.bindings]]
+key = "RBracket"
+mods = "Command|Shift"
+chars = "\u0002n"
+
+[[keyboard.bindings]]
+key = "S"
+mods = "Command"
+chars = """
+\u001b:w
+"""
+
+[[keyboard.bindings]]
+key = "T"
+mods = "Command"
+chars = "\u0002c"
+
+[[keyboard.bindings]]
+key = "T"
+mods = "Command|Shift"
+chars = "\u0002!"
+
+[[keyboard.bindings]]
+key = "X"
+mods = "Command"
+chars = "\u0002x"
+
+[[keyboard.bindings]]
+key = "Z"
+mods = "Command"
+chars = "\u0002z"
