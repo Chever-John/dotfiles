@@ -441,10 +441,11 @@ mods = "Alt|Shift"
 [window]
 decorations = "full"
 dynamic_padding = true
-opacity = 0.8
+opacity = 0.65
 startup_mode = "Maximized"
 option_as_alt = "OnlyLeft"
 
 [window.padding]
 x = 4
 y = 4
+
