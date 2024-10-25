@@ -64,3 +64,8 @@ blinking = "Always"
 [cursor.vi_mode_style]
 shape = "Block"
 blinking = "Always"
+
+##################### selection #####################
+[selection]
+semantic_escape_chars = ",│`|:\"' ()[]{}<>"
+save_to_clipboard = false

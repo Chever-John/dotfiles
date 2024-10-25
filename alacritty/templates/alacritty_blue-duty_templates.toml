@@ -1,0 +1,154 @@
+draw_bold_text_with_bright_colors = false
+live_config_reload = true
+
+[colors.primary]
+background = "#15141b"
+foreground = "#edecee"
+
+[colors.cursor]
+cursor = "#a277ff"
+
+[colors.selection]
+text = "CellForeground"
+background = "#29263c"
+
+[colors.normal]
+black = "#110f18"
+red = "#ff6767"
+green = "#61ffca"
+yellow = "#ffca85"
+blue = "#a277ff"
+magenta = "#a277ff"
+cyan = "#61ffca"
+white = "#edecee"
+
+[colors.bright]
+black = "#4d4d4d"
+red = "#ff6767"
+green = "#61ffca"
+yellow = "#ffca85"
+blue = "#a277ff"
+magenta = "#a277ff"
+cyan = "#61ffca"
+white = "#edecee"
+
+[colors.search.matches]
+foreground = "#000000"
+background = "#ffffff"
+
+[colors.search.focused_match]
+foreground = "#ffffff"
+background = "#9F7AF5"
+
+[font]
+size = 16
+
+  [font.normal]
+  family = "JetBrains Mono"
+  style = "Regular"
+
+  [font.bold]
+  family = "JetBrains Mono"
+  style = "Regular"
+
+  [font.italic]
+  family = "JetBrains Mono"
+  style = "Italic"
+
+  [font.bold_italic]
+  family = "JetBrains Mono"
+  style = "Italic"
+
+  [font.offset]
+  x = 0
+  y = 8
+
+  [font.glyph_offset]
+  x = 0
+  y = 0
+
+[window]
+decorations = "transparent"
+
+  [window.padding]
+  x = 22
+  y = 26
+
+  [window.dimensions]
+  columns = 106
+  lines = 25
+
+[scrolling]
+history = 100_000
+multiplier = 4
+
+[cursor.style]
+shape = "Beam"
+
+[selection]
+semantic_escape_chars = ",│`|:\"' ()[]{}<>"
+save_to_clipboard = true
+
+[[key_bindings]]
+key = "R"
+mods = "Command"
+mode = "~Vi|~Search"
+chars = "\f"
+
+[[key_bindings]]
+key = "R"
+mods = "Command"
+mode = "~Vi|~Search"
+action = "ClearHistory"
+
+[[key_bindings]]
+key = "W"
+mods = "Command"
+action = "Hide"
+
+[[key_bindings]]
+key = "W"
+mods = "Command|Shift"
+action = "Quit"
+
+[[key_bindings]]
+key = "N"
+mods = "Command"
+action = "SpawnNewInstance"
+
+[[key_bindings]]
+key = "T"
+mods = "Command"
+action = "CreateNewWindow"
+
+[[key_bindings]]
+key = "Left"
+mods = "Alt"
+chars = "\u001bb"
+
+[[key_bindings]]
+key = "Right"
+mods = "Alt"
+chars = "\u001bf"
+
+[[key_bindings]]
+key = "Left"
+mods = "Command"
+chars = "\u001bOH"
+mode = "AppCursor"
+
+[[key_bindings]]
+key = "Right"
+mods = "Command"
+chars = "\u001bOF"
+mode = "AppCursor"
+
+[[key_bindings]]
+key = "Back"
+mods = "Command"
+chars = "\u0015"
+
+[[key_bindings]]
+key = "Back"
+mods = "Alt"
+chars = "\u001b"
