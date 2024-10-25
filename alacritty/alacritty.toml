@@ -1,0 +1,71 @@
+import = [
+  "~/.config/alacritty/fonts.toml",
+  "~/.config/alacritty/keyboard_bindings.toml",
+  "~/.config/alacritty/colors.toml",
+]
+live_config_reload = true
+
+[shell]
+program = "/bin/zsh"
+args = [ "--login", "-c", "tmux new-session -A -D -s helloworld" ]
+
+[env]
+TERM = "tmux-256color"
+
+[window]
+dynamic_title = true
+dynamic_padding = true
+decorations = "Buttonless"
+opacity = 0.8
+option_as_alt = "OnlyLeft"
+startup_mode = "Maximized"
+resize_increments = true
+
+[window.dimensions]
+columns = 120
+lines = 35
+
+[window.padding]
+x = 4
+y = 4
+
+[scrolling]
+# 滚动历史记录的行数，例如此处设置，会保存最近的 10,000 行历史记录
+# 谁知 10,000 行是一个比较常见的选择，既能够提供足够的历史记录，又不会占用过多的内存
+history = 10_000
+# 每次滚动的时候，滚动的行数，例如此处设置，当鼠标滚轮滚动一次，会滚动3行
+multiplier = 3
+
+# 这个 bell 配置用于设置当 Alacritty 发出警告声音时的行为
+[bell]
+# 缓动动画效果为 EaseOutExpo，这个效果会让警告声音的音量逐渐减小
+animation = "EaseOutExpo"
+# 持续时间为 100 毫秒
+duration = 100
+# 颜色设置为 green
+color = "#ffffff"
+
+# 鼠标配置
+[mouse]
+hide_when_typing = true
+
+##################### cursor #####################
+# 光标的样式
+[cursor]
+# 当终端窗口失去焦点时，光标是否变为空心
+unfocused_hollow = true
+blink_interval = 700
+blink_timeout = 3
+
+[cursor.style]
+shape = "Block"
+blinking = "Always"
+
+[cursor.vi_mode_style]
+shape = "Block"
+blinking = "Always"
+
+##################### selection #####################
+[selection]
+semantic_escape_chars = ",│`|:\"' ()[]{}<>"
+save_to_clipboard = false

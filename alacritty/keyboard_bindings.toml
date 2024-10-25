@@ -1,0 +1,58 @@
+[[keyboard.bindings]]
+key = "R"
+mods = "Command"
+mode = "~Vi|~Search"
+chars = "\f"
+
+[[keyboard.bindings]]
+key = "R"
+mods = "Command"
+mode = "~Vi|~Search"
+action = "ClearHistory"
+
+[[keyboard.bindings]]
+key = "W"
+mods = "Command"
+action = "Hide"
+
+[[keyboard.bindings]]
+key = "W"
+mods = "Command|Shift"
+action = "Quit"
+
+[[keyboard.bindings]]
+key = "N"
+mods = "Command"
+action = "SpawnNewInstance"
+
+[[keyboard.bindings]]
+key = "T"
+mods = "Command"
+action = "CreateNewWindow"
+
+[[keyboard.bindings]]
+key = "Left"
+mods = "Alt"
+chars = "\u001bb"
+
+[[keyboard.bindings]]
+key = "Right"
+mods = "Alt"
+chars = "\u001bf"
+
+[[keyboard.bindings]]
+key = "Left"
+mods = "Command"
+chars = "\u001bOH"
+mode = "AppCursor"
+
+[[keyboard.bindings]]
+key = "Right"
+mods = "Command"
+chars = "\u001bOF"
+mode = "AppCursor"
+
+[[keyboard.bindings]]
+key = "Back"
+mods = "Command"
+chars = "\u0015"
