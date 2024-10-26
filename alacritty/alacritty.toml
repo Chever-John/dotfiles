@@ -18,7 +18,8 @@ dynamic_padding = true
 decorations = "Buttonless"
 opacity = 0.8
 option_as_alt = "OnlyLeft"
-startup_mode = "Maximized"
+# startup_mode = "Maximized"
+startup_mode = "SimpleFullscreen"
 resize_increments = true
 
 [window.dimensions]
