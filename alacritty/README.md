@@ -16,3 +16,26 @@ command+f #搜索关键字
 command+← #跳到行首
 conmand+→ #跳到行尾
 ```
+
+## 键绑定
+
+每个键绑定都定义为一个对象，包含若干属性。大多数属性是可选的。对于字母键，`key` 属性的值应该是对应的字母，例如 `V`。功能键（如 F1, F2 等）也是类似的。主键盘上的数字键编码为 `Key1`, `Key2` 等。数字键盘上的键编码为 `Number1`, `Number2` 等。这些编码都与 `glutin::VirtualKeyCode` 枚举中的变体相匹配。
+
+### 可用的 `key` 名称
+
+所有可用的 `key` 名称可以在以下链接中找到：
+[glutin::VirtualKeyCode 变体](https://docs.rs/glutin/*/glutin/enum.VirtualKeyCode.html#variants)
+
+### `mods` 的可能值
+
+- `Command` 或 `Super`：指的是超级键/命令键/Windows 键。
+- `Control`：指的是控制键。
+- `Shift`：指的是 Shift 键。
+- `Alt` 和 `Option`：指的是 Alt/Option 键。
+
+### 组合修饰键
+
+修饰键可以通过 `|` 符号组合。例如，如果需要同时按下 Control 和 Shift 键，可以这样表示：
+
+```yaml
+mods: Control|Shift

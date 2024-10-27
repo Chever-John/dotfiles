@@ -4,6 +4,7 @@ import = [
   "~/.config/alacritty/colors.toml",
   "~/.config/alacritty/window.toml",
   "~/.config/alacritty/cursor.toml",
+  "~/.config/alacritty/mouse.toml",
 ]
 live_config_reload = true
 
@@ -63,10 +64,6 @@ animation = "EaseOutExpo"
 duration = 100
 # 颜色设置为 green
 color = "#ffffff"
-
-# 鼠标配置
-[mouse]
-hide_when_typing = true
 
 ##################### selection #####################
 [selection]
