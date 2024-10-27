@@ -1,0 +1,49 @@
+[window]
+dynamic_title = true
+
+# 在终端内容周围平均分配额外的 padding。 
+# dynamic_padding: false
+dynamic_padding = true
+
+# 窗口的外边框
+#
+# 可以为如下的值:
+#     - full: 边框和标题栏
+#     - none: 边框和标题栏都没有
+#
+# macos 可以独占的配置:
+#     - transparent: 标题栏，透明背景和标题栏按钮
+#     - buttonless: 标题栏，透明背景，但没有标题栏按钮
+decorations = "Buttonless"
+opacity = 0.8
+option_as_alt = "OnlyLeft"
+startup_mode = "Maximized"
+# startup_mode = "SimpleFullscreen"
+resize_increments = true
+
+[window.dimensions]
+columns = 120
+lines = 60
+
+
+
+# 窗口内边距（配置变更需要重启生效）
+#
+# 调整窗口的内边距（单位为像素）。此填充由DPI缩放，并且始终在相对的两边添加指定的值。
+# 注解：内边距是窗口边框相对于终端显示内容的空白部分，可以参考 CSS
+# padding:
+#  x: 0
+#  y: 0
+[window.padding]
+x = 4
+y = 4
+
+# 窗口位置（配置变更需要重启生效）
+#
+# 单位是像素。如果不进行设置，那么由窗口管理器决定位置
+# position:
+#  x: 0
+#  y: 0
+[window.position]
+x = 0
+y = 0

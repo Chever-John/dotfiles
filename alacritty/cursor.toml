@@ -1,0 +1,15 @@
+##################### cursor #####################
+# 光标的样式
+[cursor]
+# 当终端窗口失去焦点时，光标是否变为空心
+unfocused_hollow = true
+blink_interval = 700
+blink_timeout = 3
+
+[cursor.style]
+shape = "Block"
+blinking = "Always"
+
+[cursor.vi_mode_style]
+shape = "Block"
+blinking = "Always"

@@ -10,6 +10,7 @@ mods = "Command"
 mode = "~Vi|~Search"
 action = "ClearHistory"
 
+# use command + shift + w to close the window
 [[keyboard.bindings]]
 key = "W"
 mods = "Command"
@@ -20,16 +21,19 @@ key = "W"
 mods = "Command|Shift"
 action = "Quit"
 
+# unused Error
 [[keyboard.bindings]]
 key = "N"
 mods = "Command"
 action = "SpawnNewInstance"
 
+# unused Error
 [[keyboard.bindings]]
 key = "T"
 mods = "Command"
 action = "CreateNewWindow"
 
+# use alt(option in mac) + left/right to move to the beginning/end of the near word
 [[keyboard.bindings]]
 key = "Left"
 mods = "Alt"
@@ -40,6 +44,7 @@ key = "Right"
 mods = "Alt"
 chars = "\u001bf"
 
+# use command + left/right to move to the beginning/end of the line
 [[keyboard.bindings]]
 key = "Left"
 mods = "Command"
@@ -52,7 +57,14 @@ mods = "Command"
 chars = "\u001bOF"
 mode = "AppCursor"
 
+# use command + backspace to delete the whole line
 [[keyboard.bindings]]
 key = "Back"
 mods = "Command"
 chars = "\u0015"
+
+# use command + ' to print "
+[[keyboard.bindings]]
+key = "'"
+mods = "Command"
+chars = "\u001d\""
