@@ -5,6 +5,7 @@ import = [
   "~/.config/alacritty/window.toml",
   "~/.config/alacritty/cursor.toml",
   "~/.config/alacritty/mouse.toml",
+  "~/.config/alacritty/hints.toml",
 ]
 live_config_reload = true
 
