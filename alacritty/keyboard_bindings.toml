@@ -105,3 +105,13 @@ chars = "\u0015"
 key = "'"
 mods = "Command"
 chars = "\u001d\""
+
+[[keyboard.bindings]]
+chars = "\u0006v"
+key = "D"
+mods = "Command"
+
+[[keyboard.bindings]]
+chars = "\u0006s"
+key = "D"
+mods = "Command|Shift"
