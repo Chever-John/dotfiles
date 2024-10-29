@@ -106,6 +106,16 @@ key = "'"
 mods = "Command"
 chars = "\u001d\""
 
+# 切记，下面这两个 keybindings 的配置，一定要跟随 tmux.conf 中的配置。
+# 当 tmux.conf 配置如下之后：
+# Split horiziontal and vertical splits, instead of % and ". We also open them
+# in the same directory.  Because we use widescreens nowadays, opening a
+# vertical split that takes half of the screen is not worth. For vertical we
+# only open 100 lines width, for horizontal it's 20 columns.
+# https://github.com/neovim/neovim/issues/21771
+#bind-key v split-window -h -l 100 -c "#{?pane_path,#{s@^file.//@@:pane_path},#{pane_current_path}}"
+#bind-key s split-window -v -l 30 -c "#{?pane_path,#{s@^file.//@@:pane_path},#{pane_current_path}}"
+# 然后你在配置完下面两项配置之后，那么就会奏效。
 [[keyboard.bindings]]
 chars = "\u0006v"
 key = "D"
