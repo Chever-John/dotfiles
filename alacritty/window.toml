@@ -15,7 +15,7 @@ dynamic_padding = true
 #     - transparent: 标题栏，透明背景和标题栏按钮
 #     - buttonless: 标题栏，透明背景，但没有标题栏按钮
 decorations = "Buttonless"
-opacity = 0.8
+opacity = 0.65
 option_as_alt = "OnlyLeft"
 startup_mode = "Maximized"
 # startup_mode = "SimpleFullscreen"
