@@ -142,3 +142,10 @@ source <(kubectl completion zsh)
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# ensure tmux uses 256 colors
+if [[ -n $TMUX ]]; then
+  export TERM="tmux-256color"
+else
+  export TERM="xterm-256color"
+fi

@@ -6,7 +6,7 @@
 return {
   "AstroNvim/astrocommunity",
 
-  { import = "astrocommunity.colorscheme.tokyonight-nvim" },
+  -- { import = "astrocommunity.colorscheme.tokyonight-nvim" },
   { import = "astrocommunity.pack.lua" },
   { import = "astrocommunity.pack.python" },
   -- import/override with your plugins folder

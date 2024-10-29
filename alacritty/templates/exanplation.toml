@@ -1,0 +1,215 @@
+draw_bold_text_with_bright_colors = false
+background_opacity = 0.95
+live_config_reload = true
+
+[env]
+TERM = "xterm-256color"
+
+[window]
+decorations = "none"
+startup_mode = "Windowed"
+title = "Alacritty"
+dynamic_title = true
+
+  [window.dimensions]
+  columns = 120
+  lines = 30
+
+[scrolling]
+history = 10_000
+multiplier = 3
+
+[font]
+size = 16
+use_thin_strokes = true
+
+  [font.normal]
+  family = "Fira Code"
+  style = "Regular"
+
+  [font.bold]
+  family = "Fira Code"
+  style = "Bold"
+
+  [font.italic]
+  family = "Hack"
+  style = "Italic"
+
+  [font.offset]
+  x = 1
+  y = 0
+
+[colors.primary]
+foreground = "0xeeeeec"
+
+[colors.normal]
+black = "0x2e3436"
+red = "0xcc0000"
+green = "0x73d216"
+yellow = "0xedd400"
+blue = "0x3465a4"
+magenta = "0x75507b"
+cyan = "0x06989a"
+white = "0xd3d7cf"
+
+[colors.bright]
+black = "0x2e3436"
+red = "0xef2929"
+green = "0x8ae234"
+yellow = "0xfce94f"
+blue = "0x729fcf"
+magenta = "0xad7fa8"
+cyan = "0x34e2e2"
+white = "0xeeeeec"
+
+[selection]
+semantic_escape_chars = ",│`|:\"' ()[]{}<>\t@="
+save_to_clipboard = false
+
+[cursor]
+vi_mode_style = "None"
+
+  [cursor.style]
+  shape = "Block"
+  blinking = "Off"
+
+[mouse]
+hide_when_typing = false
+
+  [mouse.url]
+  modifiers = "Command"
+
+[[key_bindings]]
+key = "LBracket"
+mods = "Command"
+chars = "\u001d["
+
+[[key_bindings]]
+key = "Apostrophe"
+mods = "Command"
+chars = '"'
+
+[[key_bindings]]
+key = "S"
+mods = "Command"
+chars = "\u001d%"
+
+[[key_bindings]]
+key = "J"
+mods = "Command"
+chars = "\u001dj"
+
+[[key_bindings]]
+key = "K"
+mods = "Command"
+chars = "\u001dk"
+
+[[key_bindings]]
+key = "H"
+mods = "Command"
+chars = "\u001dh"
+
+[[key_bindings]]
+key = "L"
+mods = "Command"
+chars = "\u001dl"
+
+[[key_bindings]]
+key = "J"
+mods = "Command|Shift"
+chars = "\u001dJ"
+
+[[key_bindings]]
+key = "K"
+mods = "Command|Shift"
+chars = "\u001dK"
+
+[[key_bindings]]
+key = "H"
+mods = "Command|Shift"
+chars = "\u001dH"
+
+[[key_bindings]]
+key = "L"
+mods = "Command|Shift"
+chars = "\u001dL"
+
+[[key_bindings]]
+key = "W"
+mods = "Command"
+chars = "\u001dw"
+
+[[key_bindings]]
+key = "T"
+mods = "Command"
+chars = "\u001dc"
+
+[[key_bindings]]
+key = "D"
+mods = "Command"
+chars = "\u001d&"
+
+[[key_bindings]]
+key = "X"
+mods = "Command"
+chars = "\u001dx"
+
+[[key_bindings]]
+key = "Z"
+mods = "Command"
+chars = "\u001dz"
+
+[[key_bindings]]
+key = "N"
+mods = "Command"
+chars = "\u001dq"
+
+[[key_bindings]]
+key = "Semicolon"
+mods = "Command|Shift"
+chars = "\u001d:"
+
+[[key_bindings]]
+key = "Key1"
+mods = "Command"
+chars = "\u001d1"
+
+[[key_bindings]]
+key = "Key2"
+mods = "Command"
+chars = "\u001d2"
+
+[[key_bindings]]
+key = "Key3"
+mods = "Command"
+chars = "\u001d3"
+
+[[key_bindings]]
+key = "Key4"
+mods = "Command"
+chars = "\u001d4"
+
+[[key_bindings]]
+key = "Key5"
+mods = "Command"
+chars = "\u001d5"
+
+[[key_bindings]]
+key = "Key6"
+mods = "Command"
+chars = "\u001d6"
+
+[[key_bindings]]
+key = "Key7"
+mods = "Command"
+chars = "\u001d7"
+
+[[key_bindings]]
+key = "Key8"
+mods = "Command"
+chars = "\u001d8"
+
+[[key_bindings]]
+key = "Key9"
+mods = "Command"
+chars = "\u001d9"
