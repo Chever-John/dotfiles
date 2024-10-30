@@ -133,8 +133,15 @@ key = "R"
 mods = "Command|Control"
 
 # tmux 特别配置
+# tmux menu
 [[keyboard.bindings]]
-chars = "\u0006a"
+chars = "\u0006A"
 key = "A"
+mods = "Command"
+
+# project commands
+[[keyboard.bindings]]
+chars = "\u0006E"
+key = "E"
 mods = "Command"
 
