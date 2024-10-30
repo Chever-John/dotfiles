@@ -131,3 +131,10 @@ mods = "Command|Shift"
 chars = "\u0006r"
 key = "R"
 mods = "Command|Control"
+
+# tmux 特别配置
+[[keyboard.bindings]]
+chars = "\u0006a"
+key = "A"
+mods = "Command"
+
