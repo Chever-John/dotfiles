@@ -125,3 +125,9 @@ mods = "Command"
 chars = "\u0006s"
 key = "D"
 mods = "Command|Shift"
+
+# 配置 r reload 我的 tmux config
+[[keyboard.bindings]]
+chars = "\u0006r"
+key = "R"
+mods = "Command"
