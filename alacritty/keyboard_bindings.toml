@@ -130,4 +130,4 @@ mods = "Command|Shift"
 [[keyboard.bindings]]
 chars = "\u0006r"
 key = "R"
-mods = "Command"
+mods = "Command|Control"
