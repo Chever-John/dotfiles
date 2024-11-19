@@ -160,14 +160,3 @@ chars = "\u0006c"
 key = "c"
 mods = "Command"
 
-# 新建一个 windows
-[[keyboard.bindings]]
-chars = "\u0006%"
-key = "%"
-mods = "Command"
-
-# 新建一个 windows
-[[keyboard.bindings]]
-chars = "\u0006c"
-key = "c"
-mods = "Command"
