@@ -65,10 +65,16 @@ mods = "Command"
 action = "SpawnNewInstance"
 
 # unused Error
-[[keyboard.bindings]]
-key = "T"
-mods = "Command"
-action = "CreateNewWindow"
+# 因为添加了 shell 配置，配置如下：
+# [shell]
+# program = "/bin/zsh"
+# args = [ "--login", "-c", "tmux new-session -A -D -s CheverJohn_Always_Love_U" ]
+# 所以这个配置总是会创建一个 Attached 的 session，所以这个配置就会出现问题。 
+# 
+# [[keyboard.bindings]]
+# key = "T"
+# mods = "Command"
+# action = "CreateNewWindow"
 
 # use alt(option in mac) + left/right to move to the beginning/end of the near word
 [[keyboard.bindings]]
@@ -116,11 +122,14 @@ chars = "\u001d\""
 #bind-key v split-window -h -l 100 -c "#{?pane_path,#{s@^file.//@@:pane_path},#{pane_current_path}}"
 #bind-key s split-window -v -l 30 -c "#{?pane_path,#{s@^file.//@@:pane_path},#{pane_current_path}}"
 # 然后你在配置完下面两项配置之后，那么就会奏效。
+
+# 在 macos 上使用 cmd + D 按键，水平切分两个 pane
 [[keyboard.bindings]]
 chars = "\u0006v"
 key = "D"
 mods = "Command"
 
+# 在 macos 上使用 cmd + shift + D 按键，垂直切分两个 pane
 [[keyboard.bindings]]
 chars = "\u0006s"
 key = "D"
@@ -128,7 +137,7 @@ mods = "Command|Shift"
 
 # 配置 r reload 我的 tmux config
 [[keyboard.bindings]]
-chars = "\u0006r"
+chars = "\u0006R"
 key = "R"
 mods = "Command|Control"
 
@@ -143,5 +152,23 @@ mods = "Command"
 [[keyboard.bindings]]
 chars = "\u0006E"
 key = "E"
+mods = "Command"
+
+# session
+[[keyboard.bindings]]
+chars = "\u0006O"
+key = "O"
+mods = "Command"
+
+# Pane Related
+[[keyboard.bindings]]
+chars = "\u0006h"
+key = "h"
+mods = "Command"
+
+# 新建一个 windows
+[[keyboard.bindings]]
+chars = "\u0006c"
+key = "c"
 mods = "Command"
 

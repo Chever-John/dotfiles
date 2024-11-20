@@ -11,7 +11,7 @@ live_config_reload = true
 
 [shell]
 program = "/bin/zsh"
-args = [ "--login", "-c", "tmux new-session -A -D -s helloworld" ]
+args = [ "--login", "-c", "tmux new-session -A -D -s CheverJohn_Always_Love_U" ]
 
 [env]
 TERM = "tmux-256color"

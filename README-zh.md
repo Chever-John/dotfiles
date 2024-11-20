@@ -9,3 +9,7 @@
 ## NVIM 配置
 
 系列文件请点击[这里](nvim/README-zh.md)
+
+## Tmux 配置
+
+tmux 使用指南请点击[这里](README_for_tmux.md)
