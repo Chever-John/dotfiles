@@ -9,5 +9,6 @@ return {
   -- { import = "astrocommunity.colorscheme.tokyonight-nvim" },
   { import = "astrocommunity.pack.lua" },
   { import = "astrocommunity.pack.python" },
+  { import = "astrocommunity.game.leetcode-nvim" },
   -- import/override with your plugins folder
 }
