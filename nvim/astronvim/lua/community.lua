@@ -12,4 +12,6 @@ return {
   { import = "astrocommunity.pack.go" },
   { import = "astrocommunity.game.leetcode-nvim" },
   -- import/override with your plugins folder
+
+  { import = "astrocommunity.test.neotest" },
 }
