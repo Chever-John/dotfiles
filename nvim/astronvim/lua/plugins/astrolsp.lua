@@ -1,5 +1,3 @@
-if true then return {} end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE
-
 -- AstroLSP allows you to customize the features in AstroNvim's LSP configuration engine
 -- Configuration documentation can be found with `:h astrolsp`
 -- NOTE: We highly recommend setting up the Lua Language Server (`:LspInstall lua_ls`)
@@ -39,12 +37,42 @@ return {
     },
     -- enable servers that you already have installed without mason
     servers = {
+      "gopls",
       -- "pyright"
     },
     -- customize language server configuration options passed to `lspconfig`
     ---@diagnostic disable: missing-fields
     config = {
-      -- clangd = { capabilities = { offsetEncoding = "utf-8" } },
+      gopls = {
+        settings = {
+          gopls = {
+            analyses = {
+              ST1003 = true,
+              fieldalignment = false,
+              fillreturns = true,
+              nilness = true,
+              nonewvars = true,
+              shadow = true,
+              undeclaredname = true,
+              unreachable = true,
+              unusedparams = true,
+              unusedwrite = true,
+              useany = true,
+            },
+            codelenses = {
+              gc_details = true, -- Show a code lens toggling the display of gc's choices.
+              generate = true, -- show the `go generate` lens.
+              regenerate_cgo = true,
+              test = true,
+              tidy = true,
+              upgrade_dependency = true,
+              vendor = true,
+            },
+            staticcheck = true,
+            gofumpt = true,
+          },
+        },
+      },
     },
     -- customize how language servers are attached
     handlers = {
