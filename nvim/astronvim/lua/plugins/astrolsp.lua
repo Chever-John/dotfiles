@@ -2,6 +2,29 @@
 -- Configuration documentation can be found with `:h astrolsp`
 -- NOTE: We highly recommend setting up the Lua Language Server (`:LspInstall lua_ls`)
 --       as this provides autocomplete and documentation while editing
+-- 首先 vim.lsp.protocol.Methods 包含了所有 LSP 方法的名称，这些名称以字符串形式表示，定义了各种方法，
+-- 例如代码补全、跳转到定义、重命名符号等。每个方法都有一个对应的名称，例如 textDocument/completion、
+-- textDocument/definition、textDocument/rename 等。
+local methods = vim.lsp.protocol.Methods
+
+local rename_handler = vim.lsp.handlers[methods.textDocument_rename]
+local auto_save_after_rename_handler = function(err, result, ctx, config)
+  rename_handler(err, result, ctx, config)
+
+  if not result or not result.documentChanges then return end
+
+  for _, documentChange in pairs(result.documentChanges) do
+    local textDocument = documentChange.textDocument
+    if textDocument and textDocument.uri then
+      local bufnr = vim.uri_to_bufnr(textDocument.uri)
+      if vim.fn.bufloaded(bufnr) == 1 then
+        vim.schedule(function()
+          vim.api.nvim_buf_call(bufnr, function() vim.cmd "write" end)
+        end)
+      end
+    end
+  end
+end
 
 ---@type LazySpec
 return {
@@ -99,5 +122,9 @@ return {
       -- this would disable semanticTokensProvider for all clients
       -- client.server_capabilities.semanticTokensProvider = nil
     end,
+
+    lsp_handlers = {
+      [methods.textDocument_rename] = auto_save_after_rename_handler,
+    },
   },
 }
