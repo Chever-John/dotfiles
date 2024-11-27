@@ -313,3 +313,19 @@ Selene 是一个用 Rust 编写的快速、现代的 Lua 代码静态分析工�
 - **自定义规则:** Selene 支持自定义规则，开发者可以根据自己的需求添加或修改规则。
 - **快速高效:** 由于 Selene 使用 Rust 编写，因此运行速度非常快，可以快速分析大型 Lua 项目。
 
+## 组件
+
+记录一下游泳的插件
+
+### mason-null-ls 组件
+
+`mason-null-ls.nvim` 的作用是**桥接 `mason.nvim` 和 `null-ls.nvim` (或者它的继任者 none-ls.nvim)**，简化在 Neovim 中使用这两个插件的过程。它利用 `mason.nvim` 管理和安装 LSP 服务器、linter 和 formatter，然后自动将这些工具配置到 `null-ls.nvim` 中，从而实现开箱即用的代码诊断、格式化和补全功能。
+
+以下是 `mason-null-ls.nvim` 的主要作用和使用方法：
+
+**作用：**
+
+1. **自动安装和配置**: `mason-null-ls.nvim` 可以自动安装 `mason.nvim` 中可用的 LSP 服务器、linter 和 formatter，并自动将其配置到 `null-ls.nvim` 中。这大大简化了配置过程，无需手动为每个工具编写配置代码。
+2. **便捷的 API**: `mason-null-ls.nvim` 提供了便捷的 API，例如 `:NullLsInstall <tool>` 命令，可以快速安装和配置指定的工具。
+3. **名称转换**: `mason-null-ls.nvim` 会自动转换 `null-ls.nvim` 的 source 名称和 `mason.nvim` 的 package 名称，例如将 `haml_lint` 转换为 `haml-lint`，避免了手动转换的麻烦。
+4. **handlers**: 允许用户自定义处理函数，以便对特定工具进行更精细的控制。
