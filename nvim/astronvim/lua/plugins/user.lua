@@ -3,6 +3,7 @@
 ---@type LazySpec
 return {
   { "nvimtools/none-ls.nvim", enabled = false },
+  { "zbirenbaum/copilot.lua", enabled = false },
 
   -- == Examples of Adding Plugins ==
 
