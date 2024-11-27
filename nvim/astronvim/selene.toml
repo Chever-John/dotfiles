@@ -1,8 +1,21 @@
+# tell Selence to use the NeoVim's std.
 std = "neovim"
 
 [rules]
+# 允许使用全局变量
+# 通常情况下，过度使用全局变量会降低代码的可维护性，但有时在特定场景下还是必要的。
 global_usage = "allow"
-if_same_then_else = "allow"
-incorrect_standard_library_use = "allow"
+
+# 允许 if 语句的 then 和 else 分支代码相同。
+# 通常是一种代码冗余，但有时可能是为了保持代码结构的对称性。
+# if_same_then_else = "allow"
+
+# 允许不正确的标准库使用
+# 这通常意味着代码使用了已废弃的 API 或以不正确的方式使用了标准函数。
+# incorrect_standard_library_use = "allow"
+
+# 允许混合类型的表
+# 例如，一个表中既包含数字键又包含字符串键。
 mixed_table = "allow"
-multiple_statements = "allow"
+
+# multiple_statements = "allow"
