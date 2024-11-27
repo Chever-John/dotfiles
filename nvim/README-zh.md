@@ -234,3 +234,82 @@ Client 专注于显示样式实现， Server 负责提供语言支持，包括�
   - **缺点：** 仅适用于使用 Go 模板的项目。
   - **推荐场景：** 使用 Go 模板的项目。
 - **`trivy`:** 用于扫描容器镜像中的漏洞的工具 (与 Go 无关)。
+
+## 我的 lua
+
+我的配置很有意思，如下：
+
+```lua
+local utils = require "astrocore"
+
+local function selene_configured(path)
+  return #vim.fs.find("selene.toml", { path = path, upward = true, type = "file" }) > 0
+end
+
+---@type LazySpec
+return {
+  {
+    "AstroNvim/astrolsp",
+    ---@type AstroLSPOpts
+    opts = {
+      ---@diagnostic disable: missing-fields
+      config = {
+        lua_ls = { settings = { Lua = { hint = { enable = true, arrayIndex = "Disable" } } } },
+      },
+    },
+  },
+  {
+    "nvim-treesitter/nvim-treesitter",
+    optional = true,
+    opts = function(_, opts)
+      if opts.ensure_installed ~= "all" then
+        opts.ensure_installed = utils.list_insert_unique(opts.ensure_installed, { "lua", "luap" })
+      end
+    end,
+  },
+  {
+    "WhoIsSethDaniel/mason-tool-installer.nvim",
+    optional = true,
+    opts = function(_, opts)
+      opts.ensure_installed =
+        require("astrocore").list_insert_unique(opts.ensure_installed, { "lua-language-server", "stylua", "selene" })
+    end,
+  },
+  {
+    "stevearc/conform.nvim",
+    optional = true,
+    opts = {
+      formatters_by_ft = {
+        lua = { "stylua" },
+      },
+    },
+  },
+  {
+    "mfussenegger/nvim-lint",
+    optional = true,
+    opts = {
+      linters_by_ft = {
+        lua = { "selene" },
+      },
+      linters = {
+        selene = { condition = function(ctx) return selene_configured(ctx.filename) end },
+      },
+    },
+  },
+}
+```
+
+### 代码静态分析工具：Selene
+
+Selene 是一个用 Rust 编写的快速、现代的 Lua 代码静态分析工具（linter）。旨在帮助开发者编写更正确、更符合规范的 Lua 代码，并尽早发现潜在的错误和代码风格问题。
+
+特别注重诊断的准确性，即便不能识别所有问题，也力求避免误报。
+
+**Selene 的作用**
+
+- **代码规范检查:** Selene 内置了许多规则，用于检查 Lua 代码是否符合最佳实践和常见的代码风格指南。这有助于提高代码的可读性和可维护性。
+- **错误检测:** Selene 可以检测一些常见的 Lua 编程错误，例如除以零、未定义的变量、类型错误等，从而减少运行时错误的风险。
+- **坏味道识别:** Selene 可以识别一些代码中的“坏味道”，例如过高的圈复杂度、重复代码等，提示开发者进行重构。
+- **自定义规则:** Selene 支持自定义规则，开发者可以根据自己的需求添加或修改规则。
+- **快速高效:** 由于 Selene 使用 Rust 编写，因此运行速度非常快，可以快速分析大型 Lua 项目。
+
