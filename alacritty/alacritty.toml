@@ -1,15 +1,5 @@
-import = [
-  "~/.config/alacritty/fonts.toml",
-  "~/.config/alacritty/keyboard_bindings.toml",
-  "~/.config/alacritty/colors.toml",
-  "~/.config/alacritty/window.toml",
-  "~/.config/alacritty/cursor.toml",
-  "~/.config/alacritty/mouse.toml",
-  # "~/.config/alacritty/hints.toml",
-]
-live_config_reload = true
 
-[shell]
+[terminal.shell]
 program = "/bin/zsh"
 args = [ "--login", "-c", "tmux new-session -A -D -s CheverJohn_Always_Love_U" ]
 
@@ -70,3 +60,17 @@ color = "#ffffff"
 [selection]
 semantic_escape_chars = ",│`|:\"' ()[]{}<>"
 save_to_clipboard = true 
+
+[general]
+live_config_reload = true
+import = [
+  "~/.config/alacritty/fonts.toml",
+  "~/.config/alacritty/keyboard_bindings.toml",
+  "~/.config/alacritty/colors.toml",
+  "~/.config/alacritty/window.toml",
+  "~/.config/alacritty/cursor.toml",
+  "~/.config/alacritty/mouse.toml",
+  # "~/.config/alacritty/hints.toml",
+]
+
+[terminal]
