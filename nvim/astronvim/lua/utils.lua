@@ -427,11 +427,32 @@ function M.yaml_ft(path, bufnr)
   end
 end
 
+-- better_search 函数，用于改进 Neovim 的搜索功能，并处理潜在的错误。
+-- 它返回了一个函数，这个返回的函数才是实际执行搜索操作的函数。
+-- 此处接受一个参数 key，表示要执行的搜索命令，例如 n 表示下一个，N 表示上一个。
+--
+-- 总结：better_search 函数通过使用 pcall 捕获错误，并使用 vim.schedule 和 vim.notify 显示错误信息，
+-- 从而提升了 Neovim 的搜索体验。它还支持数字前缀，可以重复执行搜索命令。
+-- 这个函数的设计简洁而有效，展现了 Lua 的灵活性以及 Neovim API 的强大功能。
 function M.better_search(key)
   return function()
+    -- pcall 函数的作用是捕获被调用函数中可能发生的错误。
+    -- 如果被调用函数执行成功，pcall 返回 true 以及被调用函数的返回值；
+    -- 如果发生错误，pcall 返回 false 以及错误信息。
     local searched, error =
+      -- (vim.v.count > 0 and vim.v.count or "") .. key:
+      -- 构建要执行的搜索命令。vim.v.count 表示在 Normal 模式下输入的数字前缀，用于重复执行命令。
+      -- 这段代码实现了如果用户输入了数字前缀，则将数字前缀添加到搜索命令中，例如 3n 表示查找下一个匹配项 3 次。
+      -- 如果 vim.v.count 为 0，则使用空字符串，避免影响搜索命令。
       pcall(vim.cmd.normal, { args = { (vim.v.count > 0 and vim.v.count or "") .. key }, bang = true })
+
+    -- 检查搜索命令是否执行成功。如果 searched 返回 false，表示搜索命令执行失败。
+    -- 这里 type(error) == "string"，确保错误信息是一个字符串。
     if not searched and type(error) == "string" then
+      -- 此处使用了 vim.schedule 函数将错误信息展示给用户。
+      -- vim.notify 函数用于显示通知信息；
+      -- vim.log.levels.ERROR 表示错误级别；
+      -- 使用 vim.schedule 的原因是为了避免在执行 vim.cmd.normal 的过程中直接调用 vim.notify，这可能会导致一些信息。
       vim.schedule(function() vim.notify(error, vim.log.levels.ERROR) end)
     end
   end
