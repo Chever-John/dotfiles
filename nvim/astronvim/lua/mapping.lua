@@ -63,7 +63,7 @@ function M.core_mappings(mappings)
     if vim.fn.executable "lazygit" == 1 then
       maps.n["<Leader>tl"] = {
         require("utils").toggle_lazy_git(),
-        desc = "ToggleTerm lazygit",
+        desc = "ToggleTerm lazygit from Chever",
       }
     end
 
