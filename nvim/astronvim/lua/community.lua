@@ -21,9 +21,6 @@ return {
   -- 使用了 leetcode 这个插件
   { import = "astrocommunity.game.leetcode-nvim" },
 
-  -- import/override with your plugins folder
-  { import = "astrocommunity.test.neotest" },
-
   -- 这行配置了 nvcheatsheet-nvim 插件，它提供了一个快捷键速查表，可以方便地查看 AstroNvim 中定义的快捷键。
   { import = "astrocommunity.keybinding.nvcheatsheet-nvim" },
   {
