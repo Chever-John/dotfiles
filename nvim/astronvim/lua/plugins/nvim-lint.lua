@@ -47,7 +47,7 @@ return {
         local linter = lint.linters[name]
         return linter
           and vim.fn.executable(linter.cmd) == 1
-          and not (type(linter) == "table" and linter.condition and not linter.condition(ctx))
+          and not (type(linter) == "table")
       end, linters)
     end
 
