@@ -4,6 +4,9 @@
 return {
   { "nvimtools/none-ls.nvim", enabled = false },
   { "zbirenbaum/copilot.lua", enabled = false },
+    { "jay-babu/mason-null-ls.nvim", enabled = false },
+  { "kevinhwang91/nvim-ufo", enabled = false},
+  { "jay-babu/mason-null-ls.nvim", enabled = false },
 
   -- == Examples of Adding Plugins ==
 
@@ -16,30 +19,9 @@ return {
 
   -- == Examples of Overriding Plugins ==
 
-  -- customize alpha options
-  {
-    "goolord/alpha-nvim",
-    opts = function(_, opts)
-      -- customize the dashboard header
-      opts.section.header.val = {
-        " █████  ███████ ████████ ██████   ██████",
-        "██   ██ ██         ██    ██   ██ ██    ██",
-        "███████ ███████    ██    ██████  ██    ██",
-        "██   ██      ██    ██    ██   ██ ██    ██",
-        "██   ██ ███████    ██    ██   ██  ██████",
-        " ",
-        "    ███    ██ ██    ██ ██ ███    ███",
-        "    ████   ██ ██    ██ ██ ████  ████",
-        "    ██ ██  ██ ██    ██ ██ ██ ████ ██",
-        "    ██  ██ ██  ██  ██  ██ ██  ██  ██",
-        "    ██   ████   ████   ██ ██      ██",
-      }
-      return opts
-    end,
-  },
 
   -- You can disable default plugins as follows:
-  { "max397574/better-escape.nvim", enabled = true },
+  { "max397574/better-escape.nvim", enabled = false },
 
   -- You can also easily customize additional setup of plugins that is outside of the plugin's setup call
   -- {
