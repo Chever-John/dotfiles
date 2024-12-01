@@ -96,7 +96,7 @@ local function trash(state)
   local node = state.tree:get_node()
   if node.type == "message" then return end
   local _, name = require("neo-tree.utils").split_path(node.path)
-  local msg = string.format("Are you sure you want to trash '%s'?", name)
+  local msg = string.format("Are you sure you want to trash '%s' in Normal mode?", name)
   inputs.confirm(msg, function(confirmed)
     if not confirmed then return end
     vim.api.nvim_command("silent !trash -F " .. "'" .. node.path .. "'")
@@ -110,7 +110,7 @@ local function trash_visual(state, selected_nodes)
   for _, node in ipairs(selected_nodes) do
     if node.type ~= "message" then table.insert(paths_to_trash, node.path) end
   end
-  local msg = "Are you sure you want to trash " .. #paths_to_trash .. " items?"
+  local msg = "Are you sure you want to trash " .. #paths_to_trash .. " items in visual mode?"
   inputs.confirm(msg, function(confirmed)
     if not confirmed then return end
     for _, path in ipairs(paths_to_trash) do
