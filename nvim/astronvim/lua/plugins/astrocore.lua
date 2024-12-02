@@ -56,9 +56,9 @@ return {
       diagnostics = {
         -- Diagnostics configuration (for vim.diagnostics.config({...})) when diagnostics are on
         virtual_text = {
-          prefix = "",
+          prefix = "<<<",
         },
-        update_in_insert = false,
+        update_in_insert = true,
         underline = true,
       },
       autocmds = {

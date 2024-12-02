@@ -2,7 +2,7 @@
 local M = {}
 
 -- local system = vim.loop.os_uname().sysname: 获取当前操作系统的名称并存储在 system 变量中。这用于根据不同的操作系统设置不同的按键映射。
-local system = vim.loop.os_uname().sysname
+local system = vim.uv.os_uname().sysname
 
 -- 定义模块的核心函数 core_mappings，接受一个 mappings 表作为参数。
 -- 这个表用于存储按键映射配置。如果未传入 mappings 参数，则使用 require("astrocore").empty_map_table() 创建一个空的映射表。
