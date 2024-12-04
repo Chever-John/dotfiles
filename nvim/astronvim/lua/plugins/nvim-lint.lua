@@ -3,7 +3,7 @@ local lint -- cache for the nvim-lint package
 return {
   "mfussenegger/nvim-lint",
   --- The event = "User AstroFile" ensures `nvim-lint` loads only after the AstroNvim file is loaded, optimizing startup time.
-  event = "VeryLazy",
+  event = "User AstroFile",
   --- specifies mason.nvim as a dependency for managing LSP servers and linters.
   dependencies = { "williamboman/mason.nvim" },
   specs = {
