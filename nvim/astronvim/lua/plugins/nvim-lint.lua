@@ -2,15 +2,24 @@ local lint -- cache for the nvim-lint package
 ---@type LazySpec
 return {
   "mfussenegger/nvim-lint",
+  --- The event = "User AstroFile" ensures `nvim-lint` loads only after the AstroNvim file is loaded, optimizing startup time.
   event = "User AstroFile",
+  --- specifies mason.nvim as a dependency for managing LSP servers and linters.
   dependencies = { "williamboman/mason.nvim" },
   specs = {
     {
+      -- `nvim-lint` just check code and does not know when can be called in the AstroNvim.
+      -- astrocore acts as bridge between nvim-lint and NeoVim.
+      -- we use the autocmds mechanism.
       "AstroNvim/astrocore",
       ---@param opts AstroCoreOpts
       opts = function(_, opts)
         local timer = (vim.uv or vim.loop).new_timer()
+
         if not opts.autocmds then opts.autocmds = {} end
+
+        -- The code sets up autocommands to trigger linting on various events: BufWritePost, BufWritePost, InsertLeave and TextChanged.
+        -- A timer is used to slightly delay the linting process, preventing excessive calls.
         opts.autocmds.auto_lint = {
           {
             event = { "BufWritePost", "BufReadPost", "InsertLeave", "TextChanged" },
@@ -51,6 +60,7 @@ return {
       end, linters)
     end
 
+    -- rewrite the _resolve_linter_by_ft func to redefine the linter search preffer level.
     lint._resolve_linter_by_ft = astrocore.patch_func(lint._resolve_linter_by_ft, function(orig, ...)
       local ctx = { filename = vim.api.nvim_buf_get_name(0) }
       ctx.dirname = vim.fn.fnamemodify(ctx.filename, ":h")
