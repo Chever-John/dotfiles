@@ -139,6 +139,7 @@ return {
       window = {
         mappings = {
           ["d"] = "trash",
+          ["m"] = "rename",
         },
       },
       commands = {
