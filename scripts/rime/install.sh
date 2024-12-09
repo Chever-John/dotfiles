@@ -29,15 +29,15 @@ cd "$TMP_DIR"
 
 # 运行 installer.rb 并处理交互
 spawn ./installer.rb
+expect eof  # 确保 ./installer.rb 启动完成
 
 expect "Choose mode:"
 send "2\r"
 
-# 注意这里，使用正则表达式匹配更灵活的输出
+# 修改正则表达式，移除多余的 $ 符号
 expect -re "\$$Handle Mode\$$.*Choose mode:"
 send "4\r"
-
 expect eof
 
-puts "Rime 安装完成."
 
+puts "Rime 安装完成."
