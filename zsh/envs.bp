@@ -1,0 +1,39 @@
+# Basic envs
+export LANG="en_US.UTF-8"
+export WORKSPACE="$HOME/workspace"
+
+# Find and set Go installation directory (more robust than hardcoding)
+GO_INSTALL_DIR=$(go env GOPATH)/go # Assumes Go is installed in the default location
+export GOROOT=$(go env GOROOT) # Use go env to get GOROOT
+
+# Go Modules are enabled by default, no need to set GO111MODULE
+export GOPROXY=https://goproxy.cn,direct
+export GOSUMDB=off
+
+# Construct PATH (single line, avoids repetition)
+export PATH="$HOME/bin:$GO_INSTALL_DIR/bin:$GOROOT/bin:/usr/local/bin:$PATH"
+
+# LaTeX (consider using a package manager like MacTeX)
+# If you must set it manually, use a more general approach if possible:
+if [ -d "/Library/TeX/texbin" ]; then
+  export PATH="/Library/TeX/texbin:$PATH"
+fi
+
+# Git (Homebrew usually handles this)
+if [ -d "/opt/homebrew/bin" ]; then
+  export PATH="/opt/homebrew/bin:$PATH"
+fi
+
+# Python (consider using pyenv or conda for version management)
+if [ -d "$(which python3)" ]; then
+  export PATH="$(dirname $(which python3)):$PATH"
+fi
+
+# Goland (consider using JetBrains Toolbox)
+# If you must set it manually, use a more general approach:
+if [ -d "/Applications/GoLand.app/Contents/MacOS" ]; then
+  export PATH="/Applications/GoLand.app/Contents/MacOS:$PATH"
+fi
+
+# PS1 (customized prompt)
+export PS1='[\u@dev \W]\$ '
