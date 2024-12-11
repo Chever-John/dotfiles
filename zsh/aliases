@@ -1,7 +1,7 @@
 # Common Configurations
-alias cls='clear'
+alias cls=clear
 alias grep='grep --color=auto'
-alias ll='ls -la'
+alias ll='ls -alF' # 添加 F 选项可以区分文件类型
 
 # kubernetes && docker
 alias kbgp='kubectl get pods'
@@ -12,13 +12,14 @@ alias dc='docker'
 alias dps='docker ps -a'
 alias dis='docker images -a'
 
-alias mysql=/usr/local/mysql/bin/mysql
-
 # Some IDE
-alias code=/usr/local/bin/code
-alias goland=/usr/local/bin/goland
-alias as='open -a /Applications/Android\ Studio.app'
-alias idea='open -a /Applications/IntelliJ\ IDEA.app'
+# VS Code (find path dynamically)
+if [ -x "$(command -v code)" ]; then
+  alias code=$(command -v code)
+fi
 
 # Customized aliases settings for life-related matters.
 alias weather='curl wttr.in/nanjing'
+# Other useful aliases (examples)
+alias less_color='less -R' # 彩色 less 输出
+alias mkdir_and_cd='mkdir -p "$1" && cd "$1"' # 创建目录并进入
