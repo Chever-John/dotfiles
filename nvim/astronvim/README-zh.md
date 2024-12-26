@@ -1,3 +1,0 @@
-# 我的 AstroNvim
-
-
