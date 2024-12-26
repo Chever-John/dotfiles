@@ -149,3 +149,14 @@ if [[ -n $TMUX ]]; then
 else
   export TERM="xterm-256color"
 fi
+
+export PATH="/opt/homebrew/opt/file-formula/bin:$PATH"
+
+function ff() {
+ local tmp="$(mktemp -t "yazi-cwd.XXXXX")"
+ yazi "$@" --cwd-file="$tmp"
+ if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+  cd -- "$cwd"
+ fi
+ rm -f -- "$tmp"
+}
