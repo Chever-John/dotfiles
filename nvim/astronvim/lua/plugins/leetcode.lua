@@ -50,8 +50,8 @@ return {
 
       cn = {
         enabled = true,
-        translator = true,
-        translate_problems = true,
+        translator = false,
+        translate_problems = false,
       },
 
       ---@type table<lc.lang, lc.inject>
