@@ -135,6 +135,27 @@ chars = "\u0006s"
 key = "D"
 mods = "Command|Shift"
 
+# 使用快捷键切换不同的 panel
+[[keyboard.bindings]]
+key = "h"
+mods = "Command"
+chars = "\u0006h"  # Ctrl+a h
+
+[[keyboard.bindings]]
+key = "j"
+mods = "Command"
+chars = "\u0006j"  # Ctrl+a j
+
+[[keyboard.bindings]]
+key = "k"
+mods = "Command"
+chars = "\u0006k"  # Ctrl+a k
+
+[[keyboard.bindings]]
+key = "l"
+mods = "Command"
+chars = "\u0006l"  # Ctrl+a l
+
 # 配置 r reload 我的 tmux config
 [[keyboard.bindings]]
 chars = "\u0006R"
