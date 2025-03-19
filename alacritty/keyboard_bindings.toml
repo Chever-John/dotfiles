@@ -171,4 +171,41 @@ mods = "Command"
 chars = "\u0006c"
 key = "c"
 mods = "Command"
+# 在 macOS 上使用 cmd + 1-5 按键切换到相应的 tmux 窗口
 
+[[keyboard.bindings]]
+chars = "\u0006\u0031"
+key = "Key1"
+mods = "Command"
+
+[[keyboard.bindings]]
+chars = "\u0006\u0032"
+key = "Key2"
+mods = "Command"
+
+[[keyboard.bindings]]
+chars = "\u0006\u0033"
+key = "Key3" 
+mods = "Command"
+
+[[keyboard.bindings]]
+chars = "\u0006\u0034"
+key = "Key4"
+mods = "Command"
+
+[[keyboard.bindings]]
+chars = "\u0006\u0035"
+key = "Key5"
+mods = "Command"
+
+# 使用 cmd + [ 和 cmd + ] 切换到上一个/下一个窗口
+
+[[keyboard.bindings]]
+chars = "\u0006p"
+key = "LBracket"
+mods = "Command"
+
+[[keyboard.bindings]]
+chars = "\u0006n"
+key = "RBracket" 
+mods = "Command"
