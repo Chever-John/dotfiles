@@ -156,8 +156,8 @@ mods = "Command"
 
 # session
 [[keyboard.bindings]]
-chars = "\u0006O"
-key = "O"
+chars = "\u0006o"
+key = "o"
 mods = "Command"
 
 # Pane Related

@@ -58,3 +58,17 @@ Command + D # 左右切屏
 Command + a
 ```
 
+切换 windows/server
+
+就是下面如果有很多个 windows，可以使用下面快捷键切换：
+
+```shell
+Command + 1，2，3，4，5
+```
+
+如果要切换 上一个/下一个 windows，如下：
+
+```shell
+Command + [ or ]
+```
+
