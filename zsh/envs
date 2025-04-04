@@ -12,7 +12,7 @@ export PATH=/opt/homebrew/bin:$PATH
 export LATEX_ENV=$HOME/Infra/Softwares/texlive/2023/bin/universal-darwin
 
 ## Golang's envs
-export GOVERSION=go1.23.1 # Go 版本设置
+export GOVERSION=go1.24.1 # Go 版本设置
 export GO_INSTALL_DIR=$HOME/infra/dev-env/langs/go # Go 安装目录
 export GOROOT=$GO_INSTALL_DIR/$GOVERSION # GOROOT 设置
 export GOPATH=$WORKSPACE/golang # GOPATH 设置
@@ -32,6 +32,8 @@ export GPG_TTY=$(tty)
 
 # Python envs
 export PATH="/usr/local/bin/python3:$PATH"
+# Created by `pipx` on 2025-04-03 17:58:37
+export PATH="$PATH:/Users/cheverjohn/.local/bin"
 
 # FZF_DEFAULT_OPTS
 export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS \
@@ -57,3 +59,4 @@ export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS \
   --color=separator:#ff966c \
   --color=spinner:#ff007c \
 "
+
