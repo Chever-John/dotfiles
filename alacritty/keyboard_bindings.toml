@@ -216,7 +216,3 @@ key = "Slash"
 mods = "Control"
 chars = "\u001f"
 
-[[keyboard.bindings]]
-key = "Slash"
-mods = "Command"
-chars = "\u001b[127;9u"
