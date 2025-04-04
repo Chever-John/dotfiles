@@ -199,7 +199,7 @@ key = "Key5"
 mods = "Command"
 
 # 使用 cmd + [ 和 cmd + ] 切换到上一个/下一个窗口
-
+# use cmd + [ or cmd + ] to check previous/next windows
 [[keyboard.bindings]]
 chars = "\u0006p"
 key = "LBracket"
@@ -209,3 +209,14 @@ mods = "Command"
 chars = "\u0006n"
 key = "RBracket" 
 mods = "Command"
+
+# Comment.Nvim plugin
+[[keyboard.bindings]]
+key = "Slash"
+mods = "Control"
+chars = "\u001f"
+
+[[keyboard.bindings]]
+key = "Slash"
+mods = "Command"
+chars = "\u001b[127;9u"
