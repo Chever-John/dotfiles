@@ -39,3 +39,36 @@ conmand+→ #跳到行尾
 
 ```yaml
 mods: Control|Shift
+```
+
+## 快捷键说明
+
+### tmux 相关
+
+如果要实现 pane 切分分屏的效果：
+
+```shell
+Command + Shift + D # 水平切屏
+Command + D # 左右切屏
+```
+
+获取 tmux 的 menu：
+
+```shell
+Command + a
+```
+
+切换 windows/server
+
+就是下面如果有很多个 windows，可以使用下面快捷键切换：
+
+```shell
+Command + 1，2，3，4，5
+```
+
+如果要切换 上一个/下一个 windows，如下：
+
+```shell
+Command + [ or ]
+```
+

@@ -156,8 +156,8 @@ mods = "Command"
 
 # session
 [[keyboard.bindings]]
-chars = "\u0006O"
-key = "O"
+chars = "\u0006o"
+key = "o"
 mods = "Command"
 
 # Pane Related
@@ -171,4 +171,52 @@ mods = "Command"
 chars = "\u0006c"
 key = "c"
 mods = "Command"
+# 在 macOS 上使用 cmd + 1-5 按键切换到相应的 tmux 窗口
 
+[[keyboard.bindings]]
+chars = "\u0006\u0031"
+key = "Key1"
+mods = "Command"
+
+[[keyboard.bindings]]
+chars = "\u0006\u0032"
+key = "Key2"
+mods = "Command"
+
+[[keyboard.bindings]]
+chars = "\u0006\u0033"
+key = "Key3" 
+mods = "Command"
+
+[[keyboard.bindings]]
+chars = "\u0006\u0034"
+key = "Key4"
+mods = "Command"
+
+[[keyboard.bindings]]
+chars = "\u0006\u0035"
+key = "Key5"
+mods = "Command"
+
+# 使用 cmd + [ 和 cmd + ] 切换到上一个/下一个窗口
+# use cmd + [ or cmd + ] to check previous/next windows
+[[keyboard.bindings]]
+chars = "\u0006p"
+key = "LBracket"
+mods = "Command"
+
+[[keyboard.bindings]]
+chars = "\u0006n"
+key = "RBracket" 
+mods = "Command"
+
+# Comment.Nvim plugin
+[[keyboard.bindings]]
+key = "Slash"
+mods = "Control"
+chars = "\u001f"
+
+[[keyboard.bindings]]
+key = "Slash"
+mods = "Command"
+chars = "\u001b[127;9u"
