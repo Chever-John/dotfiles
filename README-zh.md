@@ -1,6 +1,6 @@
 # CheverJohn's dotfiles
 
-[English](README.md) | [中文](README-zh.md)
+[English](./README.md) | [中文](./README-zh.md)
 
 ## 描述
 
@@ -8,7 +8,7 @@
 
 ## NVIM 配置
 
-系列文件请点击[这里](nvim/README-zh.md)
+系列文件请点击[这里](https://github.com/Chever-John/AstroNvim)
 
 ## Tmux 配置
 
