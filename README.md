@@ -1,6 +1,6 @@
 # CheverJohn's dotfiles
 
-[English](README.md) | [中文](README-zh.md)
+[English](./README.md) | [中文](./README-zh.md)
 
 ## Background
 
