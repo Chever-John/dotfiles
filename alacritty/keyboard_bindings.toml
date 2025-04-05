@@ -160,6 +160,11 @@ chars = "\u0006o"
 key = "o"
 mods = "Command"
 
+[[keyboard.bindings]]
+chars = "\u0006q"
+key = "q"
+mods = "Command"
+
 # Pane Related
 [[keyboard.bindings]]
 chars = "\u0006h"
