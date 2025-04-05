@@ -141,7 +141,7 @@ chars = "\u0006R"
 key = "R"
 mods = "Command|Control"
 
-# tmux 特别配置
+###################### tmux 特别配置 ###################### 
 # tmux menu
 [[keyboard.bindings]]
 chars = "\u0006A"
@@ -154,15 +154,30 @@ chars = "\u0006E"
 key = "E"
 mods = "Command"
 
-# session
+# Tmux Popup Session
 [[keyboard.bindings]]
 chars = "\u0006o"
 key = "o"
 mods = "Command"
 
 [[keyboard.bindings]]
-chars = "\u0006q"
-key = "q"
+chars = "\u0006g"
+key = "g"
+mods = "Command"
+
+[[keyboard.bindings]]
+chars = "\u0006k"
+key = "k"
+mods = "Command"
+
+[[keyboard.bindings]]
+chars = "\u0006n"
+key = "n"
+mods = "Command"
+
+[[keyboard.bindings]]
+chars = "\u0006p"
+key = "p"
 mods = "Command"
 
 # Pane Related
