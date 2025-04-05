@@ -14,6 +14,7 @@ if [ "$SESSION_NAME" = "popup" ]; then
     # echo "情况1: 当前在 popup 会话中" >>"$LOG_FILE"
     # tmux display-message "当前在 popup 会话中，准备分离"
     # 取消下面的注释以执行实际操作
+    tmux set -g status on
     tmux detach-client
 else
     # echo "情况2: 当前不在 popup 会话中" >>"$LOG_FILE"
@@ -27,7 +28,7 @@ else
         # 再加载配置
         tmux source-file -t popup ~/.dotfiles/tmux/sessions/popup.tmux.conf
         tmux new-session -d -s "popup" "tmux source-file ~/.dotfiles/tmux/sessions/popup.tmux.conf"
-    # else
+        # else
         # echo "popup 会话已存在" >>"$LOG_FILE"
         # tmux display-message "popup 会话已存在"
     fi
