@@ -141,7 +141,7 @@ chars = "\u0006R"
 key = "R"
 mods = "Command|Control"
 
-# tmux 特别配置
+###################### tmux 特别配置 ###################### 
 # tmux menu
 [[keyboard.bindings]]
 chars = "\u0006A"
@@ -154,11 +154,26 @@ chars = "\u0006E"
 key = "E"
 mods = "Command"
 
-# session
+# Tmux Popup Session
 [[keyboard.bindings]]
-chars = "\u0006O"
-key = "O"
+chars = "\u0006o"
+key = "o"
 mods = "Command"
+
+[[keyboard.bindings]]
+chars = "\u0006k"
+key = "k"
+mods = "Command"
+
+[[keyboard.bindings]]
+chars = "\u0006p"
+key = "p"
+mods = "Command"
+
+# hotkey to open htop quickly
+[[keyboard.bindings]]
+chars = "\u0006h"
+key = "F20"
 
 # Pane Related
 [[keyboard.bindings]]
@@ -171,4 +186,48 @@ mods = "Command"
 chars = "\u0006c"
 key = "c"
 mods = "Command"
+# 在 macOS 上使用 cmd + 1-5 按键切换到相应的 tmux 窗口
+
+[[keyboard.bindings]]
+chars = "\u0006\u0031"
+key = "Key1"
+mods = "Command"
+
+[[keyboard.bindings]]
+chars = "\u0006\u0032"
+key = "Key2"
+mods = "Command"
+
+[[keyboard.bindings]]
+chars = "\u0006\u0033"
+key = "Key3" 
+mods = "Command"
+
+[[keyboard.bindings]]
+chars = "\u0006\u0034"
+key = "Key4"
+mods = "Command"
+
+[[keyboard.bindings]]
+chars = "\u0006\u0035"
+key = "Key5"
+mods = "Command"
+
+# 使用 cmd + [ 和 cmd + ] 切换到上一个/下一个窗口
+# use cmd + [ or cmd + ] to check previous/next windows
+[[keyboard.bindings]]
+chars = "\u0006p"
+key = "LBracket"
+mods = "Command"
+
+[[keyboard.bindings]]
+chars = "\u0006n"
+key = "RBracket" 
+mods = "Command"
+
+# Comment.Nvim plugin
+[[keyboard.bindings]]
+key = "Slash"
+mods = "Control"
+chars = "\u001f"
 
