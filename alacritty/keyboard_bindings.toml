@@ -161,24 +161,19 @@ key = "o"
 mods = "Command"
 
 [[keyboard.bindings]]
-chars = "\u0006g"
-key = "g"
-mods = "Command"
-
-[[keyboard.bindings]]
 chars = "\u0006k"
 key = "k"
-mods = "Command"
-
-[[keyboard.bindings]]
-chars = "\u0006n"
-key = "n"
 mods = "Command"
 
 [[keyboard.bindings]]
 chars = "\u0006p"
 key = "p"
 mods = "Command"
+
+# hotkey to open htop quickly
+[[keyboard.bindings]]
+chars = "\u0006h"
+key = "F20"
 
 # Pane Related
 [[keyboard.bindings]]

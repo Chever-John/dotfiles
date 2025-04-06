@@ -13,7 +13,6 @@ SESSION_NAME=$(tmux display-message -p "#{session_name}")
 if [ "$SESSION_NAME" = "popup" ]; then
     # echo "情况1: 当前在 popup 会话中" >>"$LOG_FILE"
     # tmux display-message "当前在 popup 会话中，准备分离"
-    # 取消下面的注释以执行实际操作
     tmux set -g status on
     tmux detach-client
 else
@@ -35,7 +34,7 @@ else
 
     # echo "准备打开 popup 窗口" >>"$LOG_FILE"
     # tmux display-message "准备打开 popup 窗口"
-    # 取消下面的注释以执行实际操作
+    tmux source-file -t popup ~/.dotfiles/tmux/sessions/popup.tmux.conf
     tmux display-popup -b rounded -h 90% -w 85% -E "tmux attach-session -t popup"
 fi
 # echo "调试信息已写入: $LOG_FILE" >>"$LOG_FILE"
