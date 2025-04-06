@@ -1,0 +1,27 @@
+# Common Configurations
+alias cls=clear
+alias grep='grep --color=auto'
+alias ll='ls -alF' # 添加 F 选项可以区分文件类型
+
+# kubernetes && docker
+alias kbgp='kubectl get pods'
+alias kb='kubectl'
+alias kl='kubectl logs'
+alias kdp='kubectl describe pods'
+alias dc='docker'
+alias dps='docker ps -a'
+alias dis='docker images -a'
+
+# Some IDE
+# VS Code (find path dynamically)
+if [ -x "$(command -v code)" ]; then
+  alias code=$(command -v code)
+fi
+
+# Customized aliases settings for life-related matters.
+alias weather='curl wttr.in/nanjing'
+# Other useful aliases (examples)
+alias less_color='less -R' # 彩色 less 输出
+alias mkdir_and_cd='mkdir -p "$1" && cd "$1"' # 创建目录并进入
+
+alias n='nvim'
