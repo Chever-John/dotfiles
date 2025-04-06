@@ -128,7 +128,9 @@ source ~/.zshrc
 本文件夹还保存了一份 `.aliases` 文件，专门用来存储相关别名的设置。
 
 ```sh
-ln -s $HOME/.dotfiles/zsh/aliases $HOME/.zsh/aliases
+mkdir -r $HOME/.dotfiles/zsh/self-use/
+cp $HOME/.dotfiles/zsh/aliases $HOME/.dotfiles/zsh/self-use
+ln -s $HOME/.dotfiles/zsh/self-use/aliases $HOME/.zsh/aliases
 ```
 
 ## 环境：envs
@@ -136,5 +138,7 @@ ln -s $HOME/.dotfiles/zsh/aliases $HOME/.zsh/aliases
 `envs` 文件存储了所有的环境变量。
 
 ```sh
+mkdir -r $HOME/.dotfiles/zsh/self-use/
+cp $HOME/.dotfiles/zsh/envs $HOME/.dotfiles/zsh/self-use
 ln -s $HOME/.dotfiles/zsh/envs $HOME/.zsh/envs
 ```
