@@ -242,11 +242,12 @@ dist
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
 
 nvim/plugin/
-zsh/aliases
-zsh/envs
 nvim/custom_nvim/scripts/lunar.js
 nvim/CustomVim/pack/github/start/copilot.vim
 
 scripts/yiji/lunar.js
 
 nvim/CustomVim/scripts/lunar.js
+
+zsh/self-use
+
