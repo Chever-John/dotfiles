@@ -35,6 +35,10 @@ export PATH="/usr/local/bin/python3:$PATH"
 # Created by `pipx` on 2025-04-03 17:58:37
 export PATH="$PATH:/Users/cheverjohn/.local/bin"
 
+# Rust envs
+export WASMTIME_HOME="$HOME/.wasmtime"
+export PATH="$WASMTIME_HOME/bin:$PATH"
+
 # FZF_DEFAULT_OPTS
 export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS \
   --highlight-line \
