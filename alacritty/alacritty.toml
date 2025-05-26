@@ -1,7 +1,8 @@
 
 [terminal.shell]
 program = "/bin/zsh"
-args = [ "--login", "-c", "tmux new-session -A -D -s CheverJohn_Always_Love_U" ]
+args = [ "--login", "-c", "/opt/homebrew/bin/tmux new-session -A -D -s CheverJohn_Always_Love_U" ]
+# args = [ "--login" ]
 
 [env]
 TERM = "tmux-256color"

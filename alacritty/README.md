@@ -55,6 +55,21 @@ cd ~/.config
 ln -s $HOME/.dotfiles/alacritty ~/.config/alacritty       
 ```
 
+### 遇到的问题
+
+我发现我在一台全新的 macOS 上安装好 alacritty 之后，发现通过 spotlight 一直闪退。
+
+是否发现问题在于配置的 alacritty.toml 这个配置里的
+
+```toml
+[terminal.shell]
+program = "/bin/zsh"
+args = [ "--login", "-c", "/opt/homebrew/bin/tmux new-session -A -D -s CheverJohn_Always_Love_U" ]
+# args = [ "--login" ]
+```
+
+也就是说，这里**我必须指定清楚这个 tmux 的位置在哪里**，不然，我无法正常启动我的 alacritty。
+
 ## 键绑定
 
 每个键绑定都定义为一个对象，包含若干属性。大多数属性是可选的。对于字母键，`key` 属性的值应该是对应的字母，例如 `V`。功能键（如 F1, F2 等）也是类似的。主键盘上的数字键编码为 `Key1`, `Key2` 等。数字键盘上的键编码为 `Number1`, `Number2` 等。这些编码都与 `glutin::VirtualKeyCode` 枚举中的变体相匹配。

@@ -109,9 +109,6 @@ export LC_ALL=en_US.UTF-8
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-source <(kubectl completion zsh)
-
-
 # Aliases!!!! 
 # Store your own aliases in the ~/.zsh_aliases file
 [[ -f "$HOME/.zsh/aliases" ]] && source "$HOME/.zsh/aliases"
@@ -160,3 +157,5 @@ function ff() {
  fi
  rm -f -- "$tmp"
 }
+
+
