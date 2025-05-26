@@ -2,6 +2,16 @@
 
 Everyone should have a tmux:)
 
+## Install 安装方法
+
+安装方法：https://github.com/tmux/tmux/wiki/Installing
+
+macos 命令：
+
+```shell
+brew install tmux
+```
+
 ## Tmux Popup Pane
 
 ## Tmux list keys
