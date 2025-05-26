@@ -44,6 +44,12 @@ brew install zsh
 
 如果没有安装 brew，可以访问这个[link](https://docs.brew.sh/Installation#:~:text=homebrew%2Dcore%20here-,/bin/bash%20%2Dc%20%22%24(curl%20%2DfsSL%20https%3A//raw.githubusercontent.com/Homebrew/install/master/install.sh)%22,-The%20default%20Git) 进行安装。
 
+如果安装了之后还是找不到这个 brew，可以直接使用下面的命令：
+
+```shell
+/opt/homebrew/bin/brew update
+```
+
 #### 第二步，为当前用户设置 zsh 终端
 
 设置命令如下：
@@ -103,6 +109,14 @@ brew install kubectl
 
 ```sh
 rm -rf ~/.zshrc
+```
+
+#### 最最后一步，ln -s zshrc
+
+我坚持还是使用自己的祖传 zsh 呢。你需要首先软链将 `dotfiles/zsh/.zshrc` 文件到`~/.zshrc`。命令如下：
+
+```shell
+ln -s $HOME/.dotfiles/zsh/.zshrc ~/.zshrc
 source ~/.zshrc
 ```
 

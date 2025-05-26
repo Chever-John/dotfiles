@@ -1,5 +1,7 @@
 # alacritty
 
+**切记，当你准备部署安装这个的时候，建议先安装 tmux。安装[方法](../tmux/README.md)** 
+
 这是一个很不错的工具。
 
 我希望使用 alacritty + tmux + zsh + nvim（AstroNvim）来提高我的工作效率。
@@ -15,6 +17,42 @@ command+delete #删除一行
 command+f #搜索关键字
 command+← #跳到行首
 conmand+→ #跳到行尾
+```
+
+## 安装
+
+先安装字体，然后安装 alacritty。
+
+### 安装字体
+
+https://www.nerdfonts.com/font-downloads
+
+搜索到 hack
+
+找到 “Hack Nerd Font”，然后下载，这是一个压缩包，解压后，将所有文件放到苹果电脑的如下目录中：
+
+```shell
+/Users/$USER/Library/Fonts
+```
+
+然后就完成了。
+
+### 正式安装 Alacritty
+
+这边使用 brew 安装。
+
+```shell
+brew install alacritty
+```
+
+如果从官网安装的话，会导致一直闪现，无法跳出正常的页面。
+
+首先创建 .config 文件夹
+
+```shell
+mkdir ~/.config
+cd ~/.config
+ln -s $HOME/.dotfiles/alacritty ~/.config/alacritty       
 ```
 
 ## 键绑定

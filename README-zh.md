@@ -6,6 +6,18 @@
 
 这是我个人用来记录自己各个配置文件信息的项目，切记不要照搬我的哈～
 
+## 安装 tmux
+
+## Alacrity 安装和配置
+
+切记，**使用 brew 安装 alacritty**，命令如下：
+
+```shell
+brew install alacritty
+```
+
+相关文档在这个[位置](./alacritty/README.md)。
+
 ## ZSH 安装
 
 当你第一次复制这个项目的时候。你最应该做的就是安装 zsh。
