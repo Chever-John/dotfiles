@@ -30,5 +30,8 @@ alias n='nvim'
 
 # === BEGIN_CUSTOM_CONFIG === #
 #
+alias sm='ssh mm'
+alias sd='ssh mmd'
+alias sc='ssh cc'
 # === END_CUSTOM_CONFIG === #
 
