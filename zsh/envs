@@ -16,7 +16,7 @@ export LATEX_ENV=$HOME/Infra/Softwares/texlive/2023/bin/universal-darwin
 export GOVERSION=go1.24.3 # Go 版本设置
 export GO_INSTALL_DIR=$HOME/infra/dev-env/langs/go # Go 安装目录
 export GOROOT=$GO_INSTALL_DIR/$GOVERSION # GOROOT 设置
-export GOPATH=$WORKSPACE/golang # GOPATH 设置
+export GOPATH=$HOME/Workspace/golang # GOPATH 设置
 export PATH=$GOROOT/bin:$GOPATH/bin:$PATH # 将 Go 语言自带的和通过 go install 安装的二进制文件加入到 PATH 路径中
 export GO111MODULE="on" # 开启 Go moudles 特性
 export GOPROXY=https://goproxy.cn,direct # 安装 Go 模块时，代理服务器设置
@@ -42,6 +42,12 @@ export PATH="$PATH:/Users/cheverjohn/.local/bin"
 # Rust envs
 export WASMTIME_HOME="$HOME/.wasmtime"
 export PATH="$WASMTIME_HOME/bin:$PATH"
+. "$HOME/.cargo/env"  
+
+# Bun envs
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+ 
 
 # FZF_DEFAULT_OPTS
 export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS \

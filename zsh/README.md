@@ -6,6 +6,17 @@
 
 目前我常使用 Centos/Fedora、MacOS、Ubuntu 三种系统。且 Fedora 和 MacOS 已经成为我的默认开发工具。
 
+**请根据你的机器，选择你安装的方法**。
+
+### Ubuntu
+
+```shell
+apt install zsh -y
+chsh -s /bin/zsh $USER
+echo $SHELL
+wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh
+```
+
 ### CentOS/Fedora
 
 首先安装 oh-my-zsh。
@@ -20,18 +31,6 @@ wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - 
 source ~/.zshrc
 ```
 
-如果你想要一个标准的 `.zshrc` 文件的模版的话，可以运行如下命令：
-
-```bash
-/bin/cp ~/.oh-my-zsh/templates/zshrc.zsh-template ~/.zshrc
-```
-
-但我坚持还是使用自己的祖传 zsh 呢。你需要首先软链将 `dotfiles/zsh/.zshrc` 文件到`~/.zshrc`。命令如下：
-
-```bash
-ln -s $HOME/.dotfiles/zsh/.zshrc ~/.zshrc
-```
-
 ### MacOS
 
 #### 第一步，安装 zsh
@@ -42,7 +41,7 @@ ln -s $HOME/.dotfiles/zsh/.zshrc ~/.zshrc
 brew install zsh
 ```
 
-如果没有安装 brew，可以访问这个[link](https://docs.brew.sh/Installation#:~:text=homebrew%2Dcore%20here-,/bin/bash%20%2Dc%20%22%24(curl%20%2DfsSL%20https%3A//raw.githubusercontent.com/Homebrew/install/master/install.sh)%22,-The%20default%20Git) 进行安装。
+如果没有安装 brew，可以访问这个[link](<https://docs.brew.sh/Installation#:~:text=homebrew%2Dcore%20here-,/bin/bash%20%2Dc%20%22%24(curl%20%2DfsSL%20https%3A//raw.githubusercontent.com/Homebrew/install/master/install.sh)%22,-The%20default%20Git>) 进行安装。
 
 如果安装了之后还是找不到这个 brew，可以直接使用下面的命令：
 
@@ -111,13 +110,18 @@ brew install kubectl
 rm -rf ~/.zshrc
 ```
 
-#### 最最后一步，ln -s zshrc
+### 最最后一步，ln -s zshrc
 
-我坚持还是使用自己的祖传 zsh 呢。你需要首先软链将 `dotfiles/zsh/.zshrc` 文件到`~/.zshrc`。命令如下：
+如果你想要一个标准的 `.zshrc` 文件的模版的话，可以运行如下命令：
 
-```shell
+```bash
+/bin/cp ~/.oh-my-zsh/templates/zshrc.zsh-template ~/.zshrc
+```
+
+但我坚持还是使用自己的祖传 zsh 呢。你需要首先软链将 `dotfiles/zsh/.zshrc` 文件到`~/.zshrc`。命令如下：
+
+```bash
 ln -s $HOME/.dotfiles/zsh/.zshrc ~/.zshrc
-source ~/.zshrc
 ```
 
 ## 可能遇到的问题
@@ -156,6 +160,7 @@ mkdir -r $HOME/.dotfiles/zsh/self-use/
 cp $HOME/.dotfiles/zsh/envs $HOME/.dotfiles/zsh/self-use
 ln -s $HOME/.dotfiles/zsh/envs $HOME/.zsh/envs
 ```
+
 同样脚本放在最后：
 
 ```shell
