@@ -13,7 +13,7 @@ export PATH=/opt/homebrew/bin:$PATH
 export LATEX_ENV=$HOME/Infra/Softwares/texlive/2023/bin/universal-darwin
 
 ## Golang's envs
-export GOVERSION=go1.24.4 # Go 版本设置
+export GOVERSION=go1.24.3 # Go 版本设置
 export GO_INSTALL_DIR=$HOME/infra/dev-env/langs/go # Go 安装目录
 export GOROOT=$GO_INSTALL_DIR/$GOVERSION # GOROOT 设置
 export GOPATH=$HOME/Workspace/golang # GOPATH 设置
@@ -77,5 +77,7 @@ export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS \
 
 # === BEGIN_CUSTOM_CONFIG === #
 #
+export GOVERSION=go1.24.3 
+export PATH="/opt/nvim-linux-x86_64-cj/bin:$PATH"
 # === END_CUSTOM_CONFIG === #
 
