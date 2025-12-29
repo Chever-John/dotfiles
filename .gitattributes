@@ -1,0 +1,8 @@
+# Git attributes for dotfiles
+#
+# Apply custom config filter to zsh configuration files
+# This removes personal CUSTOM_CONFIG sections during commits
+# while preserving them in the working directory
+
+zsh/aliases filter=remove-custom-config
+zsh/envs filter=remove-custom-config
