@@ -251,3 +251,10 @@ nvim/CustomVim/scripts/lunar.js
 
 zsh/self-use
 
+# Claude (never commit secrets or runtime history)
+claude/settings.json
+claude/**/settings.json
+claude/plugins/known_marketplaces.json
+claude/plugins/marketplaces/
+claude/plugins/repos/
+
