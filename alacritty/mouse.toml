@@ -1,4 +1,17 @@
 # 鼠标配置
 [mouse]
-hide_when_typing = false 
+hide_when_typing = false
+
+# 双击选择单词的分隔符
+double_click = { threshold = 300 }
+triple_click = { threshold = 300 }
+
+# 鼠标绑定
+[[mouse.bindings]]
+mouse = "Middle"
+action = "PasteSelection"
+
+[[mouse.bindings]]
+mouse = "Right"
+action = "PasteSelection" 
 
