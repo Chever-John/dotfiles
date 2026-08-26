@@ -7,8 +7,10 @@
 TMUX_BIN=/opt/homebrew/bin/tmux
 BASE=CheverJohn_Always_Love_U
 
+# 注意：tmux 的 -t 默认是前缀匹配，必须加 = 强制精确匹配，
+# 否则 BASE 会误命中 BASE-2 这类编号 session。
 attached() {
-  [ -n "$($TMUX_BIN list-clients -t "$1" 2>/dev/null)" ]
+  [ -n "$($TMUX_BIN list-clients -t "=$1" 2>/dev/null)" ]
 }
 
 # 主 session 不存在或空闲 -> 直接用
@@ -16,10 +18,11 @@ if ! attached "$BASE"; then
   exec $TMUX_BIN new-session -A -s "$BASE"
 fi
 
-# 主 session 被占用 -> 找空闲的编号 session 复用，找不到就新建
+# 主 session 被占用 -> 找空闲的编号 session 复用，找不到就新建。
+# new-session 带 -A：并发启动撞号时退化为镜像 attach，而不是报错退出关窗口。
 i=2
-while $TMUX_BIN has-session -t "${BASE}-${i}" 2>/dev/null; do
-  attached "${BASE}-${i}" || exec $TMUX_BIN attach -t "${BASE}-${i}"
+while $TMUX_BIN has-session -t "=${BASE}-${i}" 2>/dev/null; do
+  attached "${BASE}-${i}" || exec $TMUX_BIN attach -t "=${BASE}-${i}"
   i=$((i + 1))
 done
-exec $TMUX_BIN new-session -s "${BASE}-${i}"
+exec $TMUX_BIN new-session -A -s "${BASE}-${i}"

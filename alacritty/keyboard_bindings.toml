@@ -65,18 +65,6 @@ key = "N"
 mods = "Command"
 action = "CreateNewWindow"
 
-# unused Error
-# 因为添加了 shell 配置，配置如下：
-# [shell]
-# program = "/bin/zsh"
-# args = [ "--login", "-c", "tmux new-session -A -D -s CheverJohn_Always_Love_U" ]
-# 所以这个配置总是会创建一个 Attached 的 session，所以这个配置就会出现问题。 
-# 
-# [[keyboard.bindings]]
-# key = "T"
-# mods = "Command"
-# action = "CreateNewWindow"
-
 # use alt(option in mac) + left/right to move to the beginning/end of the near word
 [[keyboard.bindings]]
 key = "Left"
@@ -261,14 +249,12 @@ chars = "\u0006\u0039"
 key = "Key9"
 mods = "Command"
 
-# cmd + 0 跳转到 window 10（tmux.conf 中 bind 0 select-window -t :10）
-[[keyboard.bindings]]
-chars = "\u0006\u0030"
-key = "Key0"
-mods = "Command"
+# cmd + 0 不做绑定：保留 alacritty 默认的 ResetFontSize（配合 cmd+= / cmd+-）。
+# 跳转 window 10 用 prefix+0（tmux.conf 中 bind 0 select-window -t :10）。
 
-# cmd + S 打开全局切换器（choose-tree）：树状列出所有 session/window/pane，
-# j/k 移动回车跳转，也可直接按行首的快捷字符跳转
+# cmd + S 打开全局切换器（tmux 内置 choose-tree）：树状列出所有 session/window/pane，
+# j/k 移动回车跳转。注：tmux.conf 的 prefix+S 依赖的 tmux-sessions 脚本本机不存在，
+# choose-tree 是当前唯一可用的切换器。
 [[keyboard.bindings]]
 chars = "\u0006w"
 key = "S"
