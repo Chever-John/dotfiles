@@ -1,7 +1,9 @@
 
 [terminal.shell]
 program = "/bin/zsh"
-args = [ "--login", "-c", "/opt/homebrew/bin/tmux new-session -A -D -s CheverJohn_Always_Love_U" ]
+args = [ "--login", "-c", "exec ~/.dotfiles/alacritty/tmux-launch.sh" ]
+# 旧配置：-D 会踢掉其他客户端，导致 Cmd+N 新窗口顶替旧窗口
+# args = [ "--login", "-c", "/opt/homebrew/bin/tmux new-session -A -D -s CheverJohn_Always_Love_U" ]
 # args = [ "--login" ]
 
 [env]
