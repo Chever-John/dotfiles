@@ -1,0 +1,8 @@
+{
+  "env": {
+    "ANTHROPIC_MODEL": "claude-sonnet-4-5-20250929",
+    "ANTHROPIC_CUSTOM_HEADERS": "X-Biz-Id: claude-code",
+    "ANTHROPIC_BASE_URL": "__PUT_YOUR_BASE_URL_HERE__",
+    "ANTHROPIC_AUTH_TOKEN": "__PUT_YOUR_TOKEN_HERE__"
+  }
+}
