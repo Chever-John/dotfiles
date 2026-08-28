@@ -7,7 +7,7 @@ args = [ "--login", "-c", "exec ~/.dotfiles/alacritty/tmux-launch.sh" ]
 # args = [ "--login" ]
 
 [env]
-TERM = "tmux-256color"
+TERM = "xterm-256color"
 
 [scrolling]
 # 滚动历史记录的行数，例如此处设置，会保存最近的 10,000 行历史记录
