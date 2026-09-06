@@ -130,6 +130,12 @@ chars = "\u0006T"
 key = "T"
 mods = "Command"
 
+# cmd + shift + T 使用系统剪贴板给当前 pane 命名，支持多行文本
+[[keyboard.bindings]]
+chars = "\u0006U"
+key = "T"
+mods = "Command|Shift"
+
 # 使用快捷键切换不同的 panel
 [[keyboard.bindings]]
 key = "h"
@@ -277,4 +283,3 @@ mods = "Command"
 key = "Slash"
 mods = "Control"
 chars = "\u001f"
-
