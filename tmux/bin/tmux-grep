@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Live grep (ripgrep + fzf) in the current directory; prints `file:line:col`.
+# Used by prefix + G:  tmux-grep | xargs -r tmux-helix open
+set -euo pipefail
+command -v rg >/dev/null || { echo "tmux-grep: ripgrep (rg) not installed" >&2; sleep 2; exit 1; }
+
+RG='rg --line-number --column --no-heading --color=always --smart-case --hidden --glob !.git'
+preview='f={1}; l={2}; s=$((l>10 ? l-10 : 1)); '
+if command -v bat >/dev/null; then
+  preview+='bat --color=always --style=numbers --highlight-line "$l" --line-range "$s": "$f"'
+elif command -v batcat >/dev/null; then
+  preview+='batcat --color=always --style=numbers --highlight-line "$l" --line-range "$s": "$f"'
+else
+  preview+='awk -v l="$l" -v s="$s" '"'"'NR>=s && NR<s+60 {printf "%s%5d  %s\033[0m\n", (NR==l?"\033[7m":""), NR, $0}'"'"' "$f"'
+fi
+
+fzf --ansi --disabled --query "${1:-}" \
+  --prompt 'rg> ' --delimiter : \
+  --bind "start:reload:$RG {q} || true" \
+  --bind "change:reload:sleep 0.1; $RG {q} || true" \
+  --preview "$preview" --preview-window 'right,55%,border-left' |
+  cut -d: -f1-3

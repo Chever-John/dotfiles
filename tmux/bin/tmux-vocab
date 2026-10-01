@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Translate the text piped in from tmux copy-mode (key `t`) and show it in a popup.
+# Engine order: translate-shell (google, then bing) -> dictionaryapi.dev (English words only).
+text="$(cat | tr '\n' ' ' | sed -E 's/[[:space:]]+/ /g; s/^ //; s/ $//')"
+[[ -z "$text" ]] && exit 0
+
+# Chinese in -> English out, otherwise -> Chinese.
+if printf '%s' "$text" | grep -qP '[\x{4e00}-\x{9fff}]' 2>/dev/null; then target=en; else target=zh; fi
+
+result=""
+if command -v trans >/dev/null 2>&1; then
+  for engine in google bing; do
+    result="$(timeout 8 trans -e "$engine" -no-ansi -no-auto -no-theme ":$target" "$text" 2>/dev/null)"
+    # a failed engine still prints an empty template like "[  -> 简体中文 ]": treat as empty
+    if [[ -n "$(printf '%s\n' "$result" | grep -vE '^\s*$|^\[ .* -> .*\]$' | grep -vFx "$text")" ]]; then break; fi
+    result=""
+  done
+fi
+if [[ -z "$result" ]] && command -v curl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
+  result="$(curl -fsS -m 8 "https://api.dictionaryapi.dev/api/v2/entries/en/$(printf '%s' "$text" | jq -sRr @uri)" 2>/dev/null |
+    jq -r '.[0] | .word, (.meanings[] | "\n[" + .partOfSpeech + "]", (.definitions[:3][] | "  - " + .definition))' 2>/dev/null)"
+fi
+[[ -z "$result" ]] && result="(no translation available for: $text)"
+
+tmpf="$(mktemp -t tmux-vocab.XXXXXX)"
+printf '%s\n' "$result" >"$tmpf"
+tmux display-popup -b rounded -T '#[fg=orange] Vocab ' -w 70% -h 50% -E \
+  "less -R -~ '$tmpf'; rm -f '$tmpf'"

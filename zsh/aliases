@@ -23,7 +23,8 @@ fi
 alias weather='curl wttr.in/nanjing'
 # Other useful aliases (examples)
 alias less_color='less -R' # 彩色 less 输出
-alias mkdir_and_cd='mkdir -p "$1" && cd "$1"' # 创建目录并进入
+# 创建目录并进入（alias 不能接收参数，$1 永远为空，所以改成函数）
+mkdir_and_cd() { mkdir -p -- "$1" && cd -- "$1"; }
 
 alias n='nvim'
 # === END_BASIC_CONFIG === #

@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Fuzzy-switch to any pane in any session (prefix + P), with a live preview.
+set -euo pipefail
+fmt='#{pane_id}	#{session_name}:#{window_index}.#{pane_index}	#{window_name}	#{pane_current_command}	#{?#{==:#{pane_title},#{host}},,#{pane_title}}	#{pane_current_path}'
+sel="$(tmux list-panes -a -F "$fmt" | column -t -s $'\t' |
+  fzf --prompt='pane> ' --layout=reverse --with-nth=2.. \
+      --preview 'tmux capture-pane -ep -t {1}' --preview-window 'down,60%,border-top' || true)"
+[[ -z "$sel" ]] && exit 0
+pane="$(awk '{print $1}' <<<"$sel")"
+tmux switch-client -t "$pane" 2>/dev/null || true
+tmux select-window -t "$pane"
+tmux select-pane -t "$pane"

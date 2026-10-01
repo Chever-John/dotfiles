@@ -70,11 +70,17 @@ ENABLE_CORRECTION="true"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
+# zsh-autosuggestions / zsh-syntax-highlighting / zsh-completions live in
+# $ZSH_CUSTOM/plugins (cloned by ~/.dotfiles/install.sh). syntax-highlighting must be last.
 plugins=(
 	git
-	zsh-autosuggestions
 	z
+	zsh-autosuggestions
+	zsh-completions
+	zsh-syntax-highlighting
 )
+# zsh-completions must be on fpath before compinit (which oh-my-zsh runs)
+fpath+=${ZSH_CUSTOM:-$ZSH/custom}/plugins/zsh-completions/src
 
 source $ZSH/oh-my-zsh.sh
 
@@ -118,23 +124,16 @@ export LC_ALL=en_US.UTF-8
 [[ -f "$HOME/.zsh/envs" ]] && source "$HOME/.zsh/envs"
 
 
-source ~/.dotfiles/zsh/antigen.zsh
-antigen use oh-my-zsh
-
-antigen bundle git
-antigen bundle zsh-users/zsh-autosuggestions
-antigen bundle zsh-users/zsh-syntax-highlighting
-antigen bundle zsh-users/zsh-completions
-antigen bundle z
-
-antigen apply
+# NOTE: the antigen block that used to live here loaded oh-my-zsh a *second* time
+# (double compinit, two random themes, slow startup). The same plugins are now
+# loaded natively by oh-my-zsh above. zsh/antigen.zsh is kept for reference.
 
 
 ## K8s plugins
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-source <(kubectl completion zsh)
+(( $+commands[kubectl] )) && source <(kubectl completion zsh)
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -147,7 +146,10 @@ else
   export TERM="xterm-256color"
 fi
 
-export PATH="/opt/homebrew/opt/file-formula/bin:$PATH"
+[[ -d /opt/homebrew/opt/file-formula/bin ]] && export PATH="/opt/homebrew/opt/file-formula/bin:$PATH"
+
+# machine-local overrides (not tracked)
+[[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
 
 function ff() {
  local tmp="$(mktemp -t "yazi-cwd.XXXXX")"

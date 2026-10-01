@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Open `file[:line[:col]]` in an editor inside a new tmux window.
+#   tmux-helix open FILE[:LINE[:COL]]...
+# Prefers helix (hx) if installed, otherwise $EDITOR / nvim / vim.
+set -euo pipefail
+[[ "${1:-}" == open ]] && shift
+[[ $# -eq 0 ]] && exit 0
+
+cwd="$PWD"
+for spec in "$@"; do
+  IFS=: read -r file line col <<<"$spec"
+  line="${line:-1}"; col="${col:-1}"
+  [[ "$file" = /* ]] || file="$cwd/$file"
+  if command -v hx >/dev/null; then
+    cmd="hx $(printf '%q' "$file:$line:$col")"
+  else
+    ed="${EDITOR:-}"; [[ -z "$ed" ]] && { command -v nvim >/dev/null && ed=nvim || ed=vim; }
+    cmd="$ed +$(printf '%q' "call cursor($line,$col)") $(printf '%q' "$file")"
+  fi
+  tmux new-window -c "$cwd" -n "$(basename "$file")" "$cmd"
+done

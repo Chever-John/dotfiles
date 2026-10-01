@@ -1,9 +1,9 @@
-project="dotfiles" file="deploy_envs_and_alias_file.sh" version=1
 #!/bin/bash
+# project="dotfiles" file="deploy_envs_and_alias_file.sh" version=1
 
 DOTFILES_DIR="$HOME/.dotfiles/zsh/self-use"
 ZSH_DIR="$HOME/.zsh"
-mkdir -p "$DOTFILES_DIR"
+mkdir -p "$DOTFILES_DIR" "$ZSH_DIR"
 
 # 处理 aliases 文件
 process_file() {
@@ -32,16 +32,17 @@ process_file() {
         # 如果源文件没有标记，则视整个文件为基础配置
         basic_config=$(cat "$source_file")
         # 添加标记
-        basic_config="# === BEGIN_BASIC_CONFIG === #\n${basic_config}\n# === END_BASIC_CONFIG === #"
+        basic_config="$(printf '# === BEGIN_BASIC_CONFIG === #\n%s\n# === END_BASIC_CONFIG === #' "$basic_config")"
     fi
     
     # 如果目标文件没有自定义配置部分，则添加模板
     if [ -z "$custom_config" ]; then
-        custom_config="# === BEGIN_CUSTOM_CONFIG === #\n# 在这里添加机器特定的自定义配置\n# === END_CUSTOM_CONFIG === #"
+        custom_config="$(printf '# === BEGIN_CUSTOM_CONFIG === #\n# 在这里添加机器特定的自定义配置\n# === END_CUSTOM_CONFIG === #')"
     fi
     
     # 合并基础配置和自定义配置
-    echo -e "${basic_config}\n\n${custom_config}" > "$temp_file"
+    # printf 而不是 echo -e：避免配置里的反斜杠（如 FZF_DEFAULT_OPTS 的续行符）被转义
+    printf '%s\n\n%s\n' "$basic_config" "$custom_config" > "$temp_file"
     mv "$temp_file" "$target_file"
     echo "更新文件: $target_file (保留自定义配置)"
 }

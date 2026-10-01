@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Fuzzy-switch sessions (prefix + S). Type a new name + Enter to create it.
+#   ctrl-x : kill the highlighted session
+# NB: fzf runs --bind/--preview commands with $SHELL (zsh here). In zsh a word
+# starting with `=` is "equals expansion", so tmux's exact-match target `=name`
+# must be quoted: '='{1}
+set -euo pipefail
+if [[ "${1:-}" == --list ]]; then
+  tmux list-sessions -F '#{session_name}  #{session_windows}w#{?session_attached, (attached),}'
+  exit 0
+fi
+# (reload calls `tmux-sessions --list`: fzf would split an inline tmux format on its commas)
+out="$("$0" --list | fzf --prompt='session> ' --layout=reverse --print-query \
+  --header 'enter: switch/create   ctrl-x: kill' \
+  --bind "ctrl-x:execute-silent(tmux kill-session -t '='{1})+reload(tmux-sessions --list)" \
+  --preview "tmux capture-pane -ep -t '='{1}:" --preview-window 'down,60%,border-top' || true)"
+query="$(sed -n 1p <<<"$out")"
+pick="$(sed -n 2p <<<"$out" | awk '{print $1}')"
+name="${pick:-$query}"
+[[ -z "$name" ]] && exit 0
+tmux has-session -t "=$name" 2>/dev/null || tmux new-session -d -s "$name" -c "$HOME"
+tmux switch-client -t "=$name"

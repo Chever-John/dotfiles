@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# Run a command in a neighbouring pane, creating it if needed.
+#   tmux-run [-t right|down|left|up|window] run -- CMD...
+# Used by prefix + E (project commands): `... | xargs -r tmux-run -t right run --`
+set -euo pipefail
+
+where=right
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -t) where="$2"; shift 2 ;;
+    run) shift; [[ "${1:-}" == "--" ]] && shift; break ;;
+    *) echo "usage: tmux-run [-t right|down|left|up|window] run -- CMD..." >&2; exit 2 ;;
+  esac
+done
+cmd="$*"
+[[ -z "$cmd" ]] && exit 0
+
+cur="$(tmux display-message -p '#{pane_id}')"
+cwd="$(tmux display-message -p -t "$cur" '#{pane_current_path}')"
+
+if [[ "$where" == window ]]; then
+  tmux new-window -c "$cwd"
+  target="$(tmux display-message -p '#{pane_id}')"
+else
+  case "$where" in
+    right) rel='{right-of}'; split=(-h) ;;
+    left)  rel='{left-of}';  split=(-h -b) ;;
+    down)  rel='{down-of}';  split=(-v) ;;
+    up)    rel='{up-of}';    split=(-v -b) ;;
+    *) echo "tmux-run: bad target $where" >&2; exit 2 ;;
+  esac
+  target="$(tmux display-message -p -t "$rel" '#{pane_id}' 2>/dev/null || true)"
+  if [[ -z "$target" || "$target" == "$cur" ]]; then
+    target="$(tmux split-window "${split[@]}" -d -P -F '#{pane_id}' -t "$cur" -c "$cwd")"
+    fresh=1
+  fi
+fi
+
+# Interrupt whatever is running in an *existing* pane. Never C-c a fresh pane:
+# its shell is still sourcing .zshrc and SIGINT there kills the pane.
+[[ -z "${fresh:-}" && "$where" != window ]] && tmux send-keys -t "$target" C-c
+
+# A fresh shell (zsh/ZLE) throws away typeahead when its line editor starts, so wait
+# until the prompt is drawn and the screen has been stable for a moment (max ~5s).
+if [[ -n "${fresh:-}" || "$where" == window ]]; then
+  prev=""; stable=0
+  for _ in $(seq 50); do
+    sleep 0.1
+    snap="$(tmux capture-pane -p -t "$target" 2>/dev/null | sed '/^$/d')#$(tmux display -p -t "$target" '#{cursor_x},#{cursor_y}')"
+    if [[ -n "${snap%#*}" && "$snap" == "$prev" ]]; then ((++stable >= 3)) && break; else stable=0; fi
+    prev="$snap"
+  done
+fi
+tmux send-keys -t "$target" -l -- "$cmd"
+tmux send-keys -t "$target" Enter

@@ -1,0 +1,10 @@
+# Curated commands for `tmux-commands` (prefix + | / - / C). One per line.
+htop
+glances
+nvim
+yazi
+lazygit
+git log --oneline --graph --all
+kubectl get pods -A -w
+docker ps -a
+watch -n1 nvidia-smi
