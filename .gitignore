@@ -242,6 +242,10 @@ dist
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
 
 nvim/plugin/
+# nvim user configs are separate git repos cloned here (e.g. Chever-John/AstroNvim)
+nvim/AstroNvim/
+nvim/InsisVim/
+nvim/CustomVim/
 nvim/custom_nvim/scripts/lunar.js
 nvim/CustomVim/pack/github/start/copilot.vim
 
