@@ -1,0 +1,147 @@
+#!/usr/bin/env bash
+# Reattach the ssh targets recorded by tmux-ssh-record -- and only those.
+#
+# Deliberately NOT wired into tmux-resurrect's automatic restore. Auto-firing a batch of
+# ssh connections the moment a tmux server starts is the unstable option: it stampedes the
+# jump host, hangs every pane when the laptop has just woken with no network, and can kick
+# your own clients off the remote sessions. So this is an explicit command you run.
+#
+# Safety properties, in order of importance:
+#   1. Nothing happens without a printed plan + confirmation (-y to skip).
+#   2. Each host is probed once with BatchMode+ConnectTimeout; unreachable -> abort early,
+#      no windows created, no half-restored state.
+#   3. Targets already open locally are skipped, so running it twice is harmless.
+#   4. Reattaches with `-A` but WITHOUT `-D`. The recorded commands use -D, which detaches
+#      other clients -- the exact footgun already removed from alacritty/tmux-launch.sh.
+#      Use --takeover if you really want the old kick-everyone-else behaviour.
+#   5. Connections are made one at a time with a delay, not in parallel.
+#   6. A failed connection leaves the pane on a shell with an explanation instead of
+#      letting the window vanish before you can read the error.
+#
+# Usage: tmux-ssh-restore [-y|--yes] [-n|--dry-run] [--takeover] [--delay SECONDS]
+set -euo pipefail
+
+DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/tmux"
+REGISTRY="${TMUX_SSH_REGISTRY:-$DATA_DIR/ssh-sessions.tsv}"
+
+ASSUME_YES=0
+DRY_RUN=0
+TAKEOVER=0
+DELAY=1
+
+while (($#)); do
+  case "$1" in
+    -y | --yes) ASSUME_YES=1 ;;
+    -n | --dry-run) DRY_RUN=1 ;;
+    --takeover) TAKEOVER=1 ;;
+    --delay) DELAY="${2:?--delay 需要一个秒数}"; shift ;;
+    -h | --help) sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    *) echo "未知参数: $1（-h 看用法）" >&2; exit 2 ;;
+  esac
+  shift
+done
+
+[[ -f $REGISTRY ]] || { echo "没有记录文件: $REGISTRY" >&2; echo "先在有 ssh pane 时跑一次 tmux-ssh-record" >&2; exit 1; }
+tmux list-panes -a >/dev/null 2>&1 || { echo "当前没有可用的 tmux server" >&2; exit 1; }
+
+recorded_at="$(awk -F'\t' '/^# recorded_at/{print $2; exit}' "$REGISTRY")"
+
+# ---- which remote sessions are already open locally? (idempotency) -------------------
+live_sessions=""
+while IFS= read -r args; do
+  case "$args" in
+    ssh\ * | */ssh\ *) ;;
+    *) continue ;;
+  esac
+  # last -s/-t value on the line names the remote session
+  s="$(awk '{for(i=1;i<=NF;i++) if(($i=="-s"||$i=="-t") && (i+1)<=NF && substr($(i+1),1,1)!="-") v=$(i+1)} END{print v}' <<<"$args")"
+  [[ -n $s ]] && live_sessions+=$'\n'"$s"
+done < <(ps -eo args= 2>/dev/null | grep -E '^(/[^ ]*/)?ssh ' || true)
+
+is_live() { grep -qxF "$1" <<<"${live_sessions#$'\n'}" 2>/dev/null; }
+
+# ---- build the plan ------------------------------------------------------------------
+declare -a P_HOST=() P_SESS=() P_NAME=()
+declare -a SKIP_MSG=()
+hosts=""
+
+while IFS=$'\t' read -r sname widx pidx wname host rsess argv; do
+  [[ ${sname:-} == \#* || -z ${sname:-} ]] && continue
+  if [[ -z $host || -z $rsess ]]; then
+    SKIP_MSG+=("解析不出目标，跳过: ${argv:-<空>}")
+    continue
+  fi
+  if is_live "$rsess"; then
+    SKIP_MSG+=("已经开着，跳过: $rsess")
+    continue
+  fi
+  # de-dup within the registry itself
+  dup=0
+  for i in "${!P_SESS[@]}"; do
+    [[ ${P_HOST[i]} == "$host" && ${P_SESS[i]} == "$rsess" ]] && dup=1 && break
+  done
+  ((dup)) && continue
+
+  P_HOST+=("$host"); P_SESS+=("$rsess"); P_NAME+=("${wname:-$rsess}")
+  grep -qxF "$host" <<<"${hosts#$'\n'}" 2>/dev/null || hosts+=$'\n'"$host"
+done <"$REGISTRY"
+
+hosts="${hosts#$'\n'}"
+
+for m in "${SKIP_MSG[@]}"; do echo "  · $m"; done
+if ((${#P_SESS[@]} == 0)); then
+  echo "没有需要恢复的目标（记录于 ${recorded_at:-未知时间}）。"
+  exit 0
+fi
+
+attach_flags="-A"
+((TAKEOVER)) && attach_flags="-A -D"
+
+echo
+echo "记录时间: ${recorded_at:-未知}"
+echo "将恢复 ${#P_SESS[@]} 个 ssh 目标（逐个连接，间隔 ${DELAY}s，使用 '$attach_flags'）:"
+for i in "${!P_SESS[@]}"; do
+  printf '  %d) %s  ->  %s   [窗口名: %s]\n' "$((i + 1))" "${P_HOST[i]}" "${P_SESS[i]}" "${P_NAME[i]}"
+done
+echo
+
+if ((DRY_RUN)); then echo "--dry-run：到此为止，什么都没做。"; exit 0; fi
+
+if ((!ASSUME_YES)); then
+  read -r -p "确认恢复？[y/N] " ans
+  [[ ${ans:-} == [yY] ]] || { echo "已取消。"; exit 0; }
+fi
+
+# ---- reachability probe: fail before touching any window -----------------------------
+while IFS= read -r h; do
+  [[ -n $h ]] || continue
+  printf '探测 %s ... ' "$h"
+  if ssh -o BatchMode=yes -o ConnectTimeout=8 -o StrictHostKeyChecking=accept-new "$h" true 2>/dev/null; then
+    echo "可达"
+  else
+    echo "不可达"
+    echo "中止：$h 连不上（网络/VPN/密钥）。没有创建任何窗口，修好后重跑即可。" >&2
+    exit 1
+  fi
+done <<<"$hosts"
+
+# ---- reattach, one at a time ---------------------------------------------------------
+ok=0
+for i in "${!P_SESS[@]}"; do
+  host="${P_HOST[i]}"; sess="${P_SESS[i]}"; name="${P_NAME[i]}"
+  remote="tmux new-session $attach_flags -s $(printf '%q' "$sess")"
+  # Keep the pane alive on failure so the error stays readable instead of the window
+  # closing instantly.
+  inner="ssh -t $(printf '%q' "$host") $(printf '%q' "$remote") || { echo; echo '[tmux-ssh-restore] 连接 $sess 失败，退回本地 shell'; exec \"\$SHELL\" -l; }"
+
+  if tmux new-window -d -n "$name" "$inner" 2>/dev/null; then
+    echo "  ✓ $sess"
+    ok=$((ok + 1))
+  else
+    echo "  ✗ $sess（创建窗口失败）" >&2
+  fi
+  ((i < ${#P_SESS[@]} - 1)) && sleep "$DELAY"
+done
+
+echo
+echo "完成：$ok/${#P_SESS[@]} 个窗口已创建（后台打开，用 prefix+w 挑选）。"

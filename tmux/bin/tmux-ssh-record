@@ -1,0 +1,115 @@
+#!/usr/bin/env bash
+# Snapshot every live `ssh -t <host> tmux ... -s <remote-session>` pane into a registry file.
+#
+# Why this exists: on 2026-10-01 a stray `tmux kill-server` (missing -L, so it hit the
+# default socket) killed the login-time tmux server. Every pane's tmux client died, the
+# alacritty shells -- which `exec` into the client -- went with them, and alacritty quit.
+# tmux-resurrect brings the windows back, but it deliberately does NOT restore ssh, so the
+# remote work (which all lives in `ssh -t mmd tmux new-session ... -s X`) had to be
+# reattached by hand from memory.
+#
+# This records *only what was actually open*, so tmux-ssh-restore can bring back exactly
+# those targets and nothing else. Called automatically from resurrect's post-save hook
+# (see tmux.conf), so it tracks the same 15-minute cadence as continuum.
+set -euo pipefail
+
+DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/tmux"
+REGISTRY="${TMUX_SSH_REGISTRY:-$DATA_DIR/ssh-sessions.tsv}"
+
+command -v tmux >/dev/null 2>&1 || exit 0
+# No server (or we are not allowed to talk to it) -> nothing to record, and crucially
+# nothing to overwrite. Exit 0 so we never fail a resurrect save.
+tmux list-panes -a >/dev/null 2>&1 || exit 0
+
+# Find an ssh process underneath a pane's shell. ssh is normally a direct child
+# (verified: ssh.ppid == #{pane_pid}), but allow a couple of levels for wrappers.
+find_ssh() {
+  local pid=$1 depth=${2:-3} child args
+  ((depth == 0)) && return 1
+  for child in $(pgrep -P "$pid" 2>/dev/null || true); do
+    args="$(ps -o args= -p "$child" 2>/dev/null || true)"
+    case "$args" in
+      ssh\ * | */ssh\ *) printf '%s\n' "$args"; return 0 ;;
+    esac
+    find_ssh "$child" $((depth - 1)) && return 0
+  done
+  return 1
+}
+
+# Split an ssh command line into "<host>\t<remote tmux session>".
+# ps prints argv space-joined, so `ssh -t mmd 'tmux new-session -A -D -s X'` arrives as
+# flat words. Word splitting is therefore the correct reading, not a bug.
+# The host must be located first: the `-t` in `ssh -t mmd` is ssh's tty flag, and only
+# tokens *after* the host belong to the remote command, where `-s` / `-t` name a session.
+parse_ssh() {
+  # shellcheck disable=SC2206  # intentional word split, see above
+  local -a t=($1)
+  local n=${#t[@]} i=1 host="" sess=""
+
+  while ((i < n)); do
+    case "${t[i]}" in
+      # ssh options that consume a following value
+      -o | -p | -i | -F | -l | -J | -L | -R | -D | -W | -w | -S | -c | -e | -m | -b | -I | -Q | -B)
+        ((i += 2)) ;;
+      -*) ((i++)) ;;
+      *) host="${t[i]}"; break ;;
+    esac
+  done
+  [[ -n $host ]] || return 1
+
+  # Remote command starts after the host; last -s/-t wins (`new-session -A -D -s X`,
+  # `attach -t X`). Guard against a trailing flag with no value.
+  local j
+  for ((j = i + 1; j < n; j++)); do
+    case "${t[j]}" in
+      -s | -t)
+        if ((j + 1 < n)) && [[ ${t[j + 1]} != -* ]]; then sess="${t[j + 1]}"; fi
+        ;;
+    esac
+  done
+
+  printf '%s\t%s\n' "$host" "$sess"
+}
+
+tmpfile="$(mktemp "${TMPDIR:-/tmp}/tmux-ssh-record.XXXXXX")"
+trap 'rm -f "$tmpfile"' EXIT
+
+{
+  printf '# recorded_at\t%s\n' "$(date '+%Y-%m-%dT%H:%M:%S%z')"
+  printf '# session\twindow\tpane\twindow_name\thost\tremote_session\targv\n'
+} >"$tmpfile"
+
+found=0
+while IFS=$'\t' read -r sname widx pidx wname ppid pcmd; do
+  [[ -n ${ppid:-} ]] || continue
+  argv="$(find_ssh "$ppid")" || continue
+
+  if parsed="$(parse_ssh "$argv")"; then
+    host="${parsed%%$'\t'*}"
+    rsess="${parsed#*$'\t'}"
+  else
+    host=""; rsess=""
+  fi
+
+  # Only targets we can actually reattach are useful. Keep the raw argv regardless so a
+  # parse miss degrades into "shown but skipped" instead of silently losing the record.
+  printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+    "$sname" "$widx" "$pidx" "$wname" "$host" "$rsess" "$argv" >>"$tmpfile"
+  found=$((found + 1))
+done < <(tmux list-panes -a -F \
+  '#{session_name}	#{window_index}	#{pane_index}	#{window_name}	#{pane_pid}	#{pane_current_command}' 2>/dev/null)
+
+# Never truncate the registry to nothing. A save that happens right after the server was
+# rebuilt (no ssh panes yet) must not erase the list we need in order to rebuild.
+if ((found == 0)); then
+  [[ -t 1 ]] && echo "tmux-ssh-record: 没有发现 ssh pane，保留原有记录不变" >&2
+  exit 0
+fi
+
+mkdir -p "$DATA_DIR"
+[[ -f $REGISTRY ]] && cp -p "$REGISTRY" "$REGISTRY.prev" 2>/dev/null || true
+mv "$tmpfile" "$REGISTRY"
+trap - EXIT
+
+[[ -t 1 ]] && echo "tmux-ssh-record: 已记录 $found 个 ssh pane -> $REGISTRY"
+exit 0
