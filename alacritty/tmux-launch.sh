@@ -4,7 +4,10 @@
 # - 主 session 已被别的窗口占用 -> 复用空闲的编号 session，否则新建一个
 # 这样 Cmd+N 开新窗口不会互相踢客户端（原来 -D 的问题）。
 
-TMUX_BIN=/opt/homebrew/bin/tmux
+# macOS 下 alacritty 从 Launchpad 启动时 PATH 很干净，所以优先找 Homebrew 的绝对路径
+for TMUX_BIN in /opt/homebrew/bin/tmux /usr/local/bin/tmux /usr/bin/tmux; do
+  [ -x "$TMUX_BIN" ] && break
+done
 BASE=CheverJohn_Always_Love_U
 
 # 注意：tmux 的 -t 默认是前缀匹配，必须加 = 强制精确匹配，
