@@ -24,10 +24,31 @@ suffix=${options[$((source_choice-1))]}
 suffix2=${options[$((target_choice-1))]}
 
 # 执行命令
-mv ~/.local/share/nvim ~/.local/share/nvim.bak.$suffix
-mv ~/.local/state/nvim ~/.local/state/nvim.bak.$suffix
-mv ~/.cache/nvim ~/.cache/nvim.bak.$suffix
-rm -rf ~/.config/nvim
+if [[ "$suffix" == "$suffix2" ]]; then echo "源和目标相同，无需迁移。"; exit 0; fi
+if [[ ! -d ~/.dotfiles/nvim/$suffix2 ]]; then
+    echo "目标配置 ~/.dotfiles/nvim/$suffix2 不存在（AstroNvim 可用: git clone https://github.com/Chever-John/AstroNvim.git ~/.dotfiles/nvim/AstroNvim）"
+    exit 1
+fi
+
+# 备份当前数据目录（不存在就跳过；已有同名备份则加时间戳，避免 mv 进旧备份目录里）
+backup() {
+    local dir="$1" dest="$1.bak.$suffix"
+    [[ -e "$dir" ]] || return 0
+    [[ -e "$dest" ]] && dest="$dest.$(date +%Y%m%d%H%M%S)"
+    mv "$dir" "$dest"
+}
+backup ~/.local/share/nvim
+backup ~/.local/state/nvim
+backup ~/.cache/nvim
+
+# 恢复目标配置之前的数据（如果以前切走过）
+for d in ~/.local/share/nvim ~/.local/state/nvim ~/.cache/nvim; do
+    [[ -d "$d.bak.$suffix2" ]] && mv "$d.bak.$suffix2" "$d"
+done
+
+if [[ -L ~/.config/nvim ]]; then rm -f ~/.config/nvim
+elif [[ -e ~/.config/nvim ]]; then mv ~/.config/nvim ~/.config/nvim.bak."$(date +%Y%m%d%H%M%S)"; fi
+mkdir -p ~/.config
 ln -s ~/.dotfiles/nvim/$suffix2 ~/.config/nvim
 
 echo "迁移已完成：从 $suffix 到 $suffix2。"
