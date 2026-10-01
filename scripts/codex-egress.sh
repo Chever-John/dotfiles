@@ -32,6 +32,10 @@ MIHOMO_VER=v1.19.31
 MIHOMO_SHA_ARM64=d131f44b3deb2a8356f7ac75048ad67a10d53243323951c4f3cda7b672922963
 MIHOMO_SHA_AMD64=fb6fca0e105b4310a21eaacd3a8d3853d3d8b87fa4c69737bea52a30a435aac7
 PROC_RE='^/Applications/ChatGPT\.app/|/\.codex/|/node_modules/@openai/codex'
+# app-server-daemon 是 Codex 的常驻后台进程（PPID=1，自管理，不随 ChatGPT 主进程退出）。
+# 它不读 --proxy-server，只认环境变量；若启动时没带上代理环境变量，就会直连 OpenAI 域名。
+DAEMON_RE='/\.codex/packages/app-server-daemon/.*/bin/codex( |$)'
+GUARD_STAMP="$BASE/.guard-daemon-stamp"
 GUI="gui/$(id -u)"
 
 ok()   { printf '  \033[32m✔\033[0m %s\n' "$*"; }
@@ -42,6 +46,31 @@ notify() { osascript -e "display notification \"$1\" with title \"Codex Proxy\""
 
 main_pid() { pgrep -f "^$APP/Contents/MacOS/ChatGPT( |\$)" | head -1 || true; }
 is_proxied() { [[ $(ps -o command= -p "$1" 2>/dev/null) == *"--proxy-server=$FWD"* ]]; }
+env_proxied() { [[ " $(ps eww -o command= -p "$1" 2>/dev/null) " == *" HTTPS_PROXY=$FWD "* ]]; }
+daemon_pids() { pgrep -f "$DAEMON_RE" 2>/dev/null || true; }
+
+# 存在「未指向转发器」的 app-server-daemon 时返回 0；没有 daemon 在跑也算正常。
+daemon_leaking() {
+  local dp
+  for dp in $(daemon_pids); do
+    env_proxied "$dp" || return 0
+  done
+  return 1
+}
+
+# 结束常驻 daemon，使其随下一次带代理环境变量的 Codex 启动重建。
+kill_daemons() {
+  local dp i
+  [[ -z $(daemon_pids) ]] && return 0
+  for dp in $(daemon_pids); do kill -TERM "$dp" 2>/dev/null || true; done
+  for i in $(seq 20); do
+    [[ -z $(daemon_pids) ]] && return 0
+    sleep 0.25
+  done
+  for dp in $(daemon_pids); do kill -KILL "$dp" 2>/dev/null || true; done
+  sleep 0.5
+}
+
 trace_ip() { curl -s -m 20 --noproxy '' -x "$1" https://chatgpt.com/cdn-cgi/trace 2>/dev/null | sed -n 's/^ip=//p' || true; }
 forwarder_up() { nc -z 127.0.0.1 "$PORT" >/dev/null 2>&1; }
 
@@ -151,6 +180,8 @@ cmd_install() {
   echo "3/6 写入配置"
   local secret
   secret=$(openssl rand -hex 16)
+  # YAML 单引号标量里 ' 要写成 ''；必须在 heredoc 之外算好，heredoc 内的 \' 不会被当成转义。
+  local user_esc=${user//"'"/"''"} pass_esc=${pass//"'"/"''"}
   (
     umask 077
     cat > "$BASE/config.yaml" <<EOF
@@ -168,8 +199,8 @@ proxies:
     type: $scheme
     server: $host
     port: $port
-    username: '${user//\'/\'\'}'
-    password: '${pass//\'/\'\'}'
+    username: '$user_esc'
+    password: '$pass_esc'
 rules:
 $(printf '  - DOMAIN-SUFFIX,%s,codex-egress\n' "${PROXY_DOMAINS[@]}")
   - MATCH,DIRECT
@@ -241,17 +272,20 @@ cmd_launch() {
   fi
   local pid
   pid=$(main_pid)
+  if [[ -n $pid ]] && is_proxied "$pid" && ! daemon_leaking; then
+    open -a "$APP"
+    return 0
+  fi
   if [[ -n $pid ]]; then
-    if is_proxied "$pid"; then
-      open -a "$APP"
-      return 0
-    fi
     kill -TERM "$pid" 2>/dev/null || true
     if ! wait_exit "$pid"; then
       notify "请手动退出 ChatGPT，再用 Codex Proxy 打开"
       exit 1
     fi
   fi
+  # 必须在 open 之前结束：daemon 不随主进程退出，留着它会被新进程复用旧 socket，
+  # 下面注入的 --env 永远到不了它身上，导致它继续直连 OpenAI 域名。
+  kill_daemons
   open -a "$APP" \
     --env "CODEX_APP_SERVER_FORCE_CLI=1" \
     --env "HTTPS_PROXY=$FWD" --env "HTTP_PROXY=$FWD" --env "ALL_PROXY=$FWD" --env "NO_PROXY=$NO_PROXY_LIST" \
@@ -263,9 +297,21 @@ cmd_guard() {
   local pid
   pid=$(main_pid)
   [[ -z $pid ]] && return 0
-  is_proxied "$pid" && return 0
-  echo "$(date '+%F %T') 检测到 Codex 未经代理启动（pid ${pid}），自动切换"
-  notify "检测到 Codex 未经代理启动，正在切换为代理模式"
+  if ! is_proxied "$pid"; then
+    echo "$(date '+%F %T') 检测到 Codex 未经代理启动（pid ${pid}），自动切换"
+    notify "检测到 Codex 未经代理启动，正在切换为代理模式"
+    cmd_launch
+    return 0
+  fi
+  daemon_leaking || return 0
+  # daemon 泄漏需要重启整个 Codex 才能修，加 120 秒冷却，避免修不好时 5 秒一次反复重启。
+  local now last
+  now=$(date +%s)
+  last=$(cat "$GUARD_STAMP" 2>/dev/null || echo 0)
+  if (( now - last < 120 )); then return 0; fi
+  echo "$now" > "$GUARD_STAMP"
+  echo "$(date '+%F %T') 检测到后台 app-server-daemon 未经转发器（pid $(daemon_pids | tr '\n' ' ')），重启 Codex 重建"
+  notify "后台进程未经代理，正在重启 Codex 修复"
   cmd_launch
 }
 
@@ -298,10 +344,23 @@ cmd_check() {
   if [[ -n $pid ]] && is_proxied "$pid"; then ok "Codex 以代理方式运行（pid ${pid}）"; else bad "Codex 未以代理方式运行"; failed=1; fi
   local server_pid
   server_pid=$(pgrep -f "^$APP/Contents/Resources/codex-cli/" | head -1 || true)
-  if [[ -n $server_pid && " $(ps eww -o command= -p "$server_pid" 2>/dev/null) " == *" HTTPS_PROXY=$FWD "* ]]; then
-    ok "后台进程已指向转发器"
+  if [[ -n $server_pid ]] && env_proxied "$server_pid"; then
+    ok "应用内 codex-cli 已指向转发器"
   else
-    bad "后台进程未指向转发器"; failed=1
+    bad "应用内 codex-cli 未指向转发器"; failed=1
+  fi
+  local dp bad_daemons=""
+  for dp in $(daemon_pids); do
+    env_proxied "$dp" || bad_daemons+=" $dp"
+  done
+  if [[ -z $(daemon_pids) ]]; then
+    warn "未发现常驻 app-server-daemon（Codex 可能尚未完全启动）"
+  elif [[ -z $bad_daemons ]]; then
+    ok "常驻 app-server-daemon 已指向转发器"
+  else
+    bad "常驻 app-server-daemon 未指向转发器（pid${bad_daemons}），它会直连 OpenAI 域名"
+    bad "  修复：~/.codex-egress/codex-egress.sh launch （会重启 Codex 以重建该进程）"
+    failed=1
   fi
 
   echo "3. 监控 ${secs} 秒（期间可正常使用 Codex，发几条消息）"
@@ -343,7 +402,7 @@ cmd_check() {
   if [[ -s $tmp/fwd ]]; then
     echo "  经代理 IP 访问的域名："
     sort -u "$tmp/fwd" | awk -F'\t' '$2 == "codex-egress" {printf "      %s\n", $1}'
-    echo "  直连的域名（其中若有 OpenAI 相关域名，需补进脚本的 PROXY_DOMAINS）："
+    echo "  经转发器但按规则直连的域名（非 OpenAI 域名属正常；若其中有 OpenAI 相关域名，才需补进脚本的 PROXY_DOMAINS）："
     sort -u "$tmp/fwd" | awk -F'\t' '$2 != "codex-egress" {printf "      %s\n", $1}'
   fi
   rm -rf "$tmp"
@@ -371,6 +430,11 @@ cmd_uninstall() {
     kill -TERM "$pid" 2>/dev/null || true
     wait_exit "$pid" || true
     ok "已退出以代理方式运行的 Codex，之后正常打开即可"
+  fi
+  # 常驻 daemon 仍带着指向转发器的环境变量，必须一并结束，否则卸载后它会连不上网。
+  if [[ -n $(daemon_pids) ]]; then
+    kill_daemons
+    ok "已结束常驻 app-server-daemon，下次打开 Codex 会以无代理方式重建"
   fi
   rm -rf "$BASE"
   ok "已卸载：转发器、守护、启动器、~/.zprofile 中的 codex 包装均已移除"
