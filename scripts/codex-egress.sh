@@ -72,6 +72,28 @@ kill_daemons() {
 }
 
 trace_ip() { curl -s -m 20 --noproxy '' -x "$1" https://chatgpt.com/cdn-cgi/trace 2>/dev/null | sed -n 's/^ip=//p' || true; }
+
+# 代理不通时把 curl 的真实错误和排查方向打出来，避免只留一句「连不上」
+proxy_diag() {
+  local proxy=$1 out rc=0 host port
+  host=${proxy##*@}; port=${host##*:}; host=${host%%:*}
+  out=$(curl -sS -m 20 --noproxy '' -x "$proxy" https://chatgpt.com/cdn-cgi/trace 2>&1 >/dev/null) || rc=$?
+  printf '  curl 退出码 %s：%s\n' "$rc" "${out:-无额外输出}"
+  case $rc in
+    5)  echo "  → 解析不了代理主机名：检查地址拼写或本机 DNS" ;;
+    6)  echo "  → 解析不了目标域名：本机 DNS 有问题" ;;
+    7)  echo "  → 连不上代理端口：端口写错、代理没开，或本机出网被防火墙拦住了该端口" ;;
+    28) echo "  → 超时：代理所在网络对本机不可达" ;;
+    97) echo "  → TCP 通了但代理在握手阶段主动关闭：账号密码不对、出口 IP 不在白名单，或该账号已被别处占用（并发/粘性会话限制）" ;;
+    *)  echo "  → TCP 若能通却始终失败，优先怀疑账号密码、出口 IP 白名单、账号并发限制" ;;
+  esac
+  if nc -z -G 5 -w 5 "$host" "$port" >/dev/null 2>&1; then
+    echo "  代理端口 TCP：可连（说明是认证/策略层被拒，不是网络不通）"
+  else
+    echo "  代理端口 TCP：连不上（网络层就被挡住了，先查防火墙/出网策略）"
+  fi
+  echo "  本机公网出口 IP：$(curl -s -m 10 https://ifconfig.me 2>/dev/null || echo '取不到，本机可能完全不能直连外网')"
+}
 forwarder_up() { nc -z 127.0.0.1 "$PORT" >/dev/null 2>&1; }
 
 wait_exit() {
@@ -140,7 +162,11 @@ cmd_install() {
   echo "1/6 测试代理"
   local ip
   ip=$(trace_ip "$curl_proxy")
-  [[ -n $ip ]] || die "代理连不上，请检查地址和账号密码（本次未做任何修改）"
+  if [[ -z $ip ]]; then
+    bad "代理连不上（本次未做任何修改）"
+    proxy_diag "$curl_proxy"
+    exit 1
+  fi
   ok "代理可用，ChatGPT 看到的出口 IP：$ip"
 
   local p pid
