@@ -9,3 +9,13 @@ This is the project I personally use to record information about my various prof
 https://www.baidu.com
 
 try to solve the problem hint the link and jump to the link, but got failed.
+
+## Install
+
+Clone to `~/.dotfiles` (configs reference that path) and run the idempotent bootstrap:
+
+```shell
+git clone https://github.com/Chever-John/dotfiles.git ~/.dotfiles
+~/.dotfiles/install.sh        # or: packages | tmux | tools | link | shell
+```
+
