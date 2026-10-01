@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Print the system clipboard, portable across macOS / Wayland / X11.
+# Falls back to the most recent tmux buffer on headless machines
+# (tmux copies land there, and are also pushed to your local clipboard via OSC 52).
+if command -v pbpaste >/dev/null 2>&1; then pbpaste
+elif [[ -n "${WAYLAND_DISPLAY:-}" ]] && command -v wl-paste >/dev/null 2>&1; then wl-paste -n
+elif [[ -n "${DISPLAY:-}" ]] && command -v xclip >/dev/null 2>&1; then xclip -selection clipboard -o
+elif [[ -n "${DISPLAY:-}" ]] && command -v xsel >/dev/null 2>&1; then xsel -bo
+else tmux save-buffer - 2>/dev/null
+fi

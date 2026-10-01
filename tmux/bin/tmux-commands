@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Pick a command with fzf and print it on stdout.
+# Used by tmux.conf:  prefix + | / - / C  ->  run it in a split / new window.
+#
+# Candidates = ~/.dotfiles/tmux/commands.txt (curated) + recent unique shell history.
+# Anything you type that does not match is printed as-is (so you can run ad-hoc commands).
+set -euo pipefail
+
+LIST="${TMUX_COMMANDS_FILE:-$HOME/.dotfiles/tmux/commands.txt}"
+
+candidates() {
+  [[ -f "$LIST" ]] && grep -vE '^\s*(#|$)' "$LIST"
+  local hist="${HISTFILE:-$HOME/.zsh_history}"
+  if [[ -f "$hist" ]]; then
+    # zsh extended history lines look like ": 1700000000:0;cmd"
+    tail -n 2000 "$hist" 2>/dev/null | sed -E 's/^: [0-9]+:[0-9]+;//' | tac | awk 'length > 1 && !seen[$0]++' | head -n 300
+  fi
+}
+
+out="$(candidates | awk '!seen[$0]++' | fzf --prompt='run> ' --print-query --height=100% --layout=reverse || true)"
+# --print-query: line1 = query, line2 = selection (if any)
+query="$(sed -n 1p <<<"$out")"
+pick="$(sed -n 2p <<<"$out")"
+cmd="${pick:-$query}"
+[[ -n "$cmd" ]] && printf '%s\n' "$cmd"

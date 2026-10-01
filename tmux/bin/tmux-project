@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# Discover "project commands" for the current directory (walks up to the git root).
+#   tmux-project commands        -> fzf pick, print the command (prefix + E)
+#   tmux-project list            -> print all commands
+#   tmux-project -d DIR menu     -> tmux display-menu of commands, run via tmux-run
+# Sources: Makefile, justfile, Taskfile.yml, package.json scripts, Cargo.toml, go.mod,
+#          and an optional per-project file `.tmux-commands` (one command per line).
+set -uo pipefail
+
+dir="$PWD"
+if [[ "${1:-}" == "-d" ]]; then dir="$2"; shift 2; fi
+cd "$dir" 2>/dev/null || exit 1
+root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+
+list() {
+  local d="$PWD"
+  while :; do
+    ( cd "$d" || exit
+      [[ -f .tmux-commands ]] && grep -vE '^\s*(#|$)' .tmux-commands
+      if [[ -f Makefile || -f makefile ]]; then
+        make -qp 2>/dev/null | awk -F: '/^[a-zA-Z0-9][^$#\/\t=%]*:([^=]|$)/ {split($1,a," "); for (i in a) print a[i]}' |
+          grep -vE '^(Makefile|makefile)$' | sort -u | sed 's/^/make /'
+      fi
+      if [[ -f justfile || -f Justfile ]] && command -v just >/dev/null; then just --summary 2>/dev/null | tr ' ' '\n' | sed 's/^/just /'; fi
+      if [[ -f Taskfile.yml || -f Taskfile.yaml ]] && command -v task >/dev/null; then task --list-all 2>/dev/null | awk '/^\* /{sub(":","",$2); print "task " $2}'; fi
+      if [[ -f package.json ]] && command -v jq >/dev/null; then
+        pm=npm; [[ -f pnpm-lock.yaml ]] && pm=pnpm; [[ -f yarn.lock ]] && pm=yarn; [[ -f bun.lockb || -f bun.lock ]] && pm=bun
+        jq -r '.scripts // {} | keys[]' package.json 2>/dev/null | sed "s/^/$pm run /"
+      fi
+      if [[ -f Cargo.toml ]]; then printf '%s\n' "cargo build" "cargo run" "cargo test" "cargo clippy"; fi
+      if [[ -f go.mod ]]; then printf '%s\n' "go build ./..." "go test ./..." "go vet ./..." "go run ."; fi
+    )
+    [[ "$d" == "$root" || "$d" == "/" ]] && break
+    d="$(dirname "$d")"
+  done
+}
+
+case "${1:-commands}" in
+  list) list | awk '!seen[$0]++' ;;
+  commands)
+    out="$(list | awk '!seen[$0]++' | fzf --prompt='project> ' --print-query --layout=reverse || true)"
+    cmd="$(sed -n 2p <<<"$out")"; [[ -z "$cmd" ]] && cmd="$(sed -n 1p <<<"$out")"
+    [[ -n "$cmd" ]] && printf '%s\n' "$cmd" ;;
+  menu)
+    args=()
+    i=0
+    while IFS= read -r c; do
+      key=""; ((i < 9)) && key=$((i + 1))
+      args+=("$c" "$key" "run-shell \"cd '$dir' && tmux-run -t right run -- $(printf '%q' "$c")\"")
+      ((i++))
+    done < <(list | awk '!seen[$0]++' | head -n 30)
+    ((${#args[@]})) || { tmux display-message "tmux-project: no commands found in $dir"; exit 0; }
+    tmux display-menu -x R -y P -T '#[align=centre fg=orange] Project ' "${args[@]}" ;;
+  *) echo "usage: tmux-project [-d DIR] {commands|list|menu}" >&2; exit 2 ;;
+esac
