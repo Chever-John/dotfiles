@@ -19,3 +19,6 @@ git clone https://github.com/Chever-John/dotfiles.git ~/.dotfiles
 ~/.dotfiles/install.sh        # or: packages | tmux | tools | link | shell
 ```
 
+Projects live under `~/workspace`. Go manages its own tool data (with
+`GOPATH` defaulting to `~/go`); the installer does not create or manage
+project directories.
