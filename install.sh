@@ -116,7 +116,6 @@ tools() {
     curl -fsSL "https://go.dev/dl/$GO_VERSION.linux-amd64.tar.gz" | tar xz -C "$tmp"
     mv "$tmp/go" "$GO_INSTALL_DIR/$GO_VERSION"; rm -rf "$tmp"
   fi
-  mkdir -p "$HOME/Workspace/golang" "$HOME/workspace"
 
   log "rust (rustup)"
   [[ -x "$HOME/.cargo/bin/cargo" ]] || curl -fsSL https://sh.rustup.rs | sh -s -- -y --no-modify-path >/dev/null
