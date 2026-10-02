@@ -12,6 +12,31 @@ macos 命令：
 brew install tmux
 ```
 
+### 会话恢复（推荐）
+
+本配置使用 `tmux-resurrect` 保存和恢复会话、窗口、面板布局、工作目录及终端文本，使用 `tmux-continuum` 每 15 分钟自动保存一次，并在 tmux server 启动时恢复上次快照。
+
+先确保 `~/.tmux.conf` 指向本仓库的 `tmux/tmux.conf`。已安装 TPM 时，可在 tmux 中安装插件：
+
+```shell
+tmux new-session
+# 先按 Ctrl+f，再按大写 I，安装配置中声明的插件
+```
+
+未使用 TPM 时，需将两个插件分别安装到 `~/.tmux/plugins/tmux-resurrect` 和 `~/.tmux/plugins/tmux-continuum`；本配置会直接加载它们。已有 tmux server 时，安装后执行 `tmux source-file ~/.tmux.conf` 加载插件。
+
+恢复行为说明：
+
+- 自动保存：插件加载且状态栏开启时，每 15 分钟保存一次。
+- 自动恢复：仅在 tmux server 启动时触发，恢复最近一次已保存的快照；重载配置不会触发自动恢复。`@continuum-restore 'on'` 本身不会配置系统开机自启。
+- 手动保存：`prefix + C-s`。
+- 手动恢复：`prefix + C-r`。
+- SSH 连接：保存快照时记录目标，恢复后运行 `tmux-ssh-restore` 手动重连；可先运行 `tmux-ssh-restore --dry-run` 查看计划。
+
+恢复只会重建工作区并重新启动受支持的程序，不会恢复进程内存或正在执行的任务进度；保存的终端文本也不代表原进程仍在运行。
+
+> 前缀键是 `Ctrl+f`，所以实际是 `Ctrl+f Ctrl+s` 和 `Ctrl+f Ctrl+r`。
+
 ## Tmux Popup Pane
 
 ## Tmux list keys
