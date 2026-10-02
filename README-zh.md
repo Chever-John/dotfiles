@@ -26,6 +26,9 @@ git clone https://github.com/Chever-John/dotfiles.git ~/.dotfiles
   `zsh/self-use/*` 的 `CUSTOM_CONFIG` 区块里，不进 git）
 - 把登录 shell 改成 zsh
 
+项目统一放在 `~/workspace`；Go 的工具数据交由 Go 自身管理（默认 `GOPATH` 为 `~/go`）。
+安装脚本不会创建或管理项目目录。
+
 tmux 里 `prefix + | - C E G P S` 等弹窗用到的 `tmux-*` 命令在 `tmux/bin/` 下。
 
 ## 安装 tmux

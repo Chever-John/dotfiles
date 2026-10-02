@@ -3,7 +3,7 @@
 # Basic envs
 export LANG="en_US.UTF-8" # 设置系统语言为 en_US.UTF-8，避免终端出现中文乱码
 # export PS1='[\u@dev \W]\$ ' # 默认的 PS1 设置会展示全部的路径，为了防止过长，这里只展示："用户名@dev 最后的目录名"
-export WORKSPACE="$HOME/workspace" # 设置工作目录
+export WORKSPACE="${WORKSPACE:-$HOME/workspace}" # 项目根目录，可由机器本地配置覆盖
 
 # helper: prepend a dir to PATH only if it exists and is not already there
 _path_prepend() { [[ -d "$1" && ":$PATH:" != *":$1:"* ]] && export PATH="$1:$PATH"; }
@@ -19,16 +19,6 @@ export LATEX_ENV=$HOME/Infra/Softwares/texlive/2023/bin/universal-darwin
 ## Golang's envs
 export GOVERSION=go1.24.4 # Go 版本设置
 export GO_INSTALL_DIR=$HOME/infra/dev-env/langs/go # Go 安装目录
-export GOROOT=$GO_INSTALL_DIR/$GOVERSION # GOROOT 设置
-# 如果指定版本没装，就退回系统里能找到的 go，避免 GOROOT 指向不存在的目录
-if [[ ! -x "$GOROOT/bin/go" ]]; then
-  for _g in /opt/homebrew/opt/go/libexec /usr/local/go; do
-    [[ -x "$_g/bin/go" ]] && { export GOROOT="$_g"; break; }
-  done
-  unset _g
-fi
-export GOPATH=$HOME/Workspace/golang # GOPATH 设置
-export GO111MODULE="on" # 开启 Go moudles 特性
 export GOPROXY=https://goproxy.cn,direct # 安装 Go 模块时，代理服务器设置
 export GOPRIVATE=
 export GOSUMDB=off # 关闭校验 Go 依赖包的哈希值
@@ -38,12 +28,9 @@ _path_prepend /Applications/GoLand.app/Contents/MacOS
 
 # Environment variables
 _path_prepend "$LATEX_ENV"
-_path_prepend "$GOROOT/bin"
-_path_prepend "$GOPATH/bin"
+_path_prepend "$GO_INSTALL_DIR/$GOVERSION/bin"
+_path_prepend "${GOPATH:-$HOME/go}/bin"
 _path_prepend "$HOME/bin"
-
-# Go envs
-export GOSRC="$WORKSPACE/golang/src"
 
 export GPG_TTY=$(tty)
 
@@ -96,4 +83,3 @@ export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS \
 
 # === BEGIN_CUSTOM_CONFIG === #
 # === END_CUSTOM_CONFIG === #
-
