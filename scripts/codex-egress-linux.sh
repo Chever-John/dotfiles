@@ -44,8 +44,8 @@ notify() { have notify-send && notify-send "Codex Proxy" "$1" >/dev/null 2>&1 ||
 
 # ------------------------------------------------------------------ /proc 工具
 proc_exe()  { readlink -f "/proc/$1/exe" 2>/dev/null || true; }
-proc_args() { tr '\0' ' ' < "/proc/$1/cmdline" 2>/dev/null || true; }
-proc_env()  { tr '\0' '\n' < "/proc/$1/environ" 2>/dev/null || true; }
+proc_args() { tr '\0' ' ' 2>/dev/null < "/proc/$1/cmdline" || true; }
+proc_env()  { tr '\0' '\n' 2>/dev/null < "/proc/$1/environ" || true; }
 # 不用管道：set -o pipefail 下 grep -q 命中后提前退出会让上游吃 SIGPIPE，
 # 整条管道返回 141，导致「已代理」被误判成「未代理」。
 env_proxied() {
@@ -60,7 +60,9 @@ proc_candidates() {
   local d p comm
   for d in /proc/[0-9]*; do
     p=${d#/proc/}
-    read -r comm < "$d/comm" 2>/dev/null || continue
+    # 2>/dev/null 必须写在 < 之前：重定向从左到右生效，进程在扫描中途退出时
+    # 打开 comm 失败的报错才不会漏到终端（/proc/<pid>/comm: No such file or directory）
+    read -r comm 2>/dev/null < "$d/comm" || continue
     # comm 被内核截断到 15 字符：codex-code-mode-host -> codex-code-mod
     [[ $comm == codex* || $comm == node ]] || continue
     printf '%s\n' "$p"
