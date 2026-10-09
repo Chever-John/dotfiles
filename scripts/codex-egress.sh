@@ -23,7 +23,12 @@ PORT=7899
 API_PORT=9099
 FWD="http://127.0.0.1:$PORT"
 NO_PROXY_LIST='localhost,127.0.0.1,::1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16'
-ZPROFILE="$HOME/.zprofile"
+# codex 包装函数写进 .zshrc 而不是 .zprofile：.zprofile 只有登录 shell 读，
+# 在终端里再敲一次 zsh / tmux / IDE 内置终端起的非登录 shell 拿不到包装函数，
+# codex 会裸启动（无代理环境变量），带起的 app-server-daemon 直连 OpenAI，
+# 守护随即每 120 秒重启一次 Codex，表现为「Codex 一直在重启」。
+ZSHRC="$HOME/.zshrc"
+ZPROFILE="$HOME/.zprofile"   # 旧版本写入位置，仅用于清理
 # 经代理出网的域名（含子域名）：OpenAI 自有域名及其登录、错误上报、统计、实验开关服务商。
 # 未列出的域名一律直连；OpenAI 若启用新域名，需补到这里后重新执行 install。
 PROXY_DOMAINS=(
@@ -170,11 +175,15 @@ wait_exit() {
   return 1
 }
 
+# 同时清理 .zshrc（当前写入位置）和 .zprofile（旧版本写入位置）里的 codex-proxy 块。
 remove_zprofile_block() {
-  [[ -f $ZPROFILE ]] || return 0
-  awk '/^# >>> codex-proxy/{s=1;next} /^# <<< codex-proxy/{s=0;next} !s && !/desktop-proxy\.zsh/' "$ZPROFILE" > "$ZPROFILE.codex-egress.tmp"
-  cat "$ZPROFILE.codex-egress.tmp" > "$ZPROFILE"
-  rm -f "$ZPROFILE.codex-egress.tmp"
+  local f
+  for f in "$ZSHRC" "$ZPROFILE"; do
+    [[ -f $f ]] || continue
+    awk '/^# >>> codex-proxy/{s=1;next} /^# <<< codex-proxy/{s=0;next} !s && !/desktop-proxy\.zsh/' "$f" > "$f.codex-egress.tmp"
+    cat "$f.codex-egress.tmp" > "$f"
+    rm -f "$f.codex-egress.tmp"
+  done
 }
 
 write_plist() {
@@ -311,7 +320,7 @@ EOF
     ok "已移除旧方案的 ~/.codex/desktop-proxy.zsh"
   fi
   remove_zprofile_block
-  cat >> "$ZPROFILE" <<'EOF'
+  cat >> "$ZSHRC" <<'EOF'
 # >>> codex-proxy >>>
 [[ "${CODEX_SHELL:-}" == 1 && -r ~/.codex-egress/env.zsh ]] && source ~/.codex-egress/env.zsh
 codex() {
@@ -323,7 +332,7 @@ codex() {
 }
 # <<< codex-proxy <<<
 EOF
-  ok "配置写入 ~/.codex-egress，并在 ~/.zprofile 加入 codex 命令包装"
+  ok "配置写入 ~/.codex-egress，并在 ~/.zshrc 加入 codex 命令包装"
 
   echo "4/6 启动转发器（开机自启）"
   EXTRA_KEYS='<key>KeepAlive</key><true/>' write_plist "$FWD_LABEL" "$BASE/bin/mihomo" -d "$BASE"
@@ -772,7 +781,7 @@ cmd_uninstall() {
     ok "已结束常驻 app-server-daemon，下次打开 Codex 会以无代理方式重建"
   fi
   rm -rf "$BASE"
-  ok "已卸载：转发器、守护、启动器、~/.zprofile 中的 codex 包装均已移除"
+  ok "已卸载：转发器、守护、启动器、~/.zshrc 中的 codex 包装均已移除"
 }
 
 case "${1:-}" in
