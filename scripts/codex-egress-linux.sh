@@ -44,8 +44,8 @@ notify() { have notify-send && notify-send "Codex Proxy" "$1" >/dev/null 2>&1 ||
 
 # ------------------------------------------------------------------ /proc 工具
 proc_exe()  { readlink -f "/proc/$1/exe" 2>/dev/null || true; }
-proc_args() { tr '\0' ' ' < "/proc/$1/cmdline" 2>/dev/null || true; }
-proc_env()  { tr '\0' '\n' < "/proc/$1/environ" 2>/dev/null || true; }
+proc_args() { tr '\0' ' ' 2>/dev/null < "/proc/$1/cmdline" || true; }
+proc_env()  { tr '\0' '\n' 2>/dev/null < "/proc/$1/environ" || true; }
 # 不用管道：set -o pipefail 下 grep -q 命中后提前退出会让上游吃 SIGPIPE，
 # 整条管道返回 141，导致「已代理」被误判成「未代理」。
 env_proxied() {
@@ -60,7 +60,9 @@ proc_candidates() {
   local d p comm
   for d in /proc/[0-9]*; do
     p=${d#/proc/}
-    read -r comm < "$d/comm" 2>/dev/null || continue
+    # 2>/dev/null 必须写在 < 之前：重定向从左到右生效，进程在扫描中途退出时
+    # 打开 comm 失败的报错才不会漏到终端（/proc/<pid>/comm: No such file or directory）
+    read -r comm 2>/dev/null < "$d/comm" || continue
     # comm 被内核截断到 15 字符：codex-code-mode-host -> codex-code-mod
     [[ $comm == codex* || $comm == node ]] || continue
     printf '%s\n' "$p"
@@ -154,7 +156,8 @@ need_systemd_user() {
 detect_profile() {
   [[ -n $PROFILE ]] && return 0
   case "${SHELL:-}" in
-    */zsh)  PROFILE="$HOME/.zprofile" ;;
+    # zsh 先读 .zprofile 再读 .zshrc；写进 .zprofile 会被 .zshrc 里后续的 PATH 前置挤到后面
+    */zsh)  PROFILE="$HOME/.zshrc" ;;
     */bash) PROFILE="$HOME/.bash_profile"; [[ -f $PROFILE ]] || PROFILE="$HOME/.profile" ;;
     *)      PROFILE="$HOME/.profile" ;;
   esac
@@ -164,7 +167,7 @@ remove_profile_block() {
   detect_profile
   local f
   # 清理所有可能写入过的 rc 文件，避免换 shell 后残留
-  for f in "$PROFILE" "$HOME/.zprofile" "$HOME/.bash_profile" "$HOME/.profile" "$HOME/.bashrc"; do
+  for f in "$PROFILE" "$HOME/.zprofile" "$HOME/.zshrc" "$HOME/.zshrc.local" "$HOME/.bash_profile" "$HOME/.profile" "$HOME/.bashrc"; do
     [[ -f $f ]] || continue
     grep -q '^# >>> codex-proxy' "$f" || continue
     awk '/^# >>> codex-proxy/{s=1;next} /^# <<< codex-proxy/{s=0;next} !s' "$f" > "$f.codex-egress.tmp"
@@ -182,7 +185,10 @@ find_real_codex() {
     [[ -x $cand && -f $cand ]] || continue
     real=$(readlink -f "$cand" 2>/dev/null || echo "$cand")
     [[ $real == "$SHIM_DIR/codex" ]] && continue
-    printf '%s\n' "$real"
+    # 记录软链接入口而非解析结果：官方安装器升级时只切换 standalone/current 软链接，
+    # 若记录 readlink -f 后的 releases/<版本>/bin/codex，旧版本目录残留时 shim 会一直执行旧版，
+    # 旧版每次启动又触发自动更新，形成「更新成功但版本不变」的循环。
+    printf '%s\n' "$cand"
     return 0
   done
   return 1
@@ -323,7 +329,7 @@ if [[ -z \$REAL || ! -x \$REAL ]]; then
     if [[ -x \$_d/codex && -f \$_d/codex ]]; then
       _r=\$(readlink -f "\$_d/codex" 2>/dev/null || echo "\$_d/codex")
       [[ \$_r == "$SHIM_DIR/codex" ]] && continue
-      REAL="\$_r"; break
+      REAL="\$_d/codex"; break
     fi
   done
 fi
@@ -336,10 +342,11 @@ EOF
   cat >> "$PROFILE" <<EOF
 # >>> codex-proxy >>>
 # 把 codex 指向 codex-egress 的 shim（注入代理环境变量后再执行真正的 codex）
+# 先从 PATH 中移除再前置，确保 shim 总在最前（即使之前已被其他目录挤到后面）
 case ":\$PATH:" in
-  *":$SHIM_DIR:"*) ;;
-  *) PATH="$SHIM_DIR:\$PATH"; export PATH ;;
+  *":$SHIM_DIR:"*) PATH=\$(printf '%s' ":\$PATH:" | sed -e "s#:$SHIM_DIR:#:#g" -e 's#^:##' -e 's#:\$##') ;;
 esac
+PATH="$SHIM_DIR\${PATH:+:\$PATH}"; export PATH
 # <<< codex-proxy <<<
 EOF
   ok "配置写入 ~/.codex-egress，并在 ${PROFILE/#$HOME/\~} 前置 shim 目录"
@@ -448,6 +455,20 @@ cmd_check() {
       ok "codex 已指向 shim（真实路径：${real:-运行时动态定位}）"
     else
       bad "当前 shell 的 codex 解析为 ${resolved:-未找到}，不是 shim；请重开登录 shell"; failed=1
+    fi
+    # shim 实际执行的版本必须与 PATH 中最新安装的 codex 一致，否则升级不生效且会反复触发自动更新
+    local want_bin have_bin
+    want_bin=$(find_real_codex || true)
+    if [[ -n $real && -n $want_bin ]]; then
+      have_bin=$(readlink -f "$real" 2>/dev/null || echo "$real")
+      want_bin=$(readlink -f "$want_bin" 2>/dev/null || echo "$want_bin")
+      if [[ $have_bin == "$want_bin" ]]; then
+        ok "shim 执行的版本：$("$have_bin" --version 2>/dev/null || echo 未知)"
+      else
+        bad "shim 固定执行 $have_bin，而当前安装的是 $want_bin（升级未生效）"
+        bad "  修复：重新执行 $SELF install（沿用已有代理配置）"
+        failed=1
+      fi
     fi
   else
     bad "shim 不存在"; failed=1
