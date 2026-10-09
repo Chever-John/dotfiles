@@ -4,6 +4,8 @@
 #   安装:  bash codex-egress.sh install 'http://用户名:密码@IP:端口'
 #   启动:  打开「应用程序 → Codex Proxy」（或 ~/.codex-egress/codex-egress.sh launch）
 #   自检:  ~/.codex-egress/codex-egress.sh check [秒数]
+#   质量:  ~/.codex-egress/codex-egress.sh quality [小时数=24]   （请求链路质量报告）
+#          ~/.codex-egress/codex-egress.sh quality live          （实时看每一次失败）
 #   卸载:  ~/.codex-egress/codex-egress.sh uninstall
 #
 # 原理：本机起一个只供 Codex 使用的转发器（127.0.0.1:7899，OpenAI 相关域名走代理、其余直连），
@@ -21,7 +23,12 @@ PORT=7899
 API_PORT=9099
 FWD="http://127.0.0.1:$PORT"
 NO_PROXY_LIST='localhost,127.0.0.1,::1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16'
-ZPROFILE="$HOME/.zprofile"
+# codex 包装函数写进 .zshrc 而不是 .zprofile：.zprofile 只有登录 shell 读，
+# 在终端里再敲一次 zsh / tmux / IDE 内置终端起的非登录 shell 拿不到包装函数，
+# codex 会裸启动（无代理环境变量），带起的 app-server-daemon 直连 OpenAI，
+# 守护随即每 120 秒重启一次 Codex，表现为「Codex 一直在重启」。
+ZSHRC="$HOME/.zshrc"
+ZPROFILE="$HOME/.zprofile"   # 旧版本写入位置，仅用于清理
 # 经代理出网的域名（含子域名）：OpenAI 自有域名及其登录、错误上报、统计、实验开关服务商。
 # 未列出的域名一律直连；OpenAI 若启用新域名，需补到这里后重新执行 install。
 PROXY_DOMAINS=(
@@ -73,6 +80,66 @@ kill_daemons() {
 
 trace_ip() { curl -s -m 20 --noproxy '' -x "$1" https://chatgpt.com/cdn-cgi/trace 2>/dev/null | sed -n 's/^ip=//p' || true; }
 
+# 经指定代理探测 ChatGPT 看到的出口 IP。成功返回 0 并把 IP 放进 PROBE_IP；
+# 失败时保留 curl 退出码 / HTTP 状态 / 错误文本（PROBE_RC / PROBE_HTTP / PROBE_ERR）供 egress_diag 解释，不再一律显示成「空」。
+PROBE_RC=0 PROBE_HTTP="" PROBE_ERR="" PROBE_IP=""
+egress_probe() {
+  local proxy=$1 body code
+  body=$(mktemp); code=$(mktemp)
+  PROBE_RC=0 PROBE_HTTP="" PROBE_ERR="" PROBE_IP=""
+  PROBE_ERR=$(curl -sS -m 20 --noproxy '' -x "$proxy" -o "$body" -w '%{http_code}' https://chatgpt.com/cdn-cgi/trace 2>&1 >"$code") || PROBE_RC=$?
+  PROBE_HTTP=$(cat "$code" 2>/dev/null || true)
+  PROBE_IP=$(sed -n 's/^ip=//p' "$body" 2>/dev/null || true)
+  rm -f "$body" "$code"
+  [[ -n $PROBE_IP ]]
+}
+
+upstream_addr() { awk '/^    server:/{s=$2} /^    port:/{p=$2} END{print s ":" p}' "$BASE/config.yaml" 2>/dev/null || true; }
+
+# 把「探测不到出口 IP」翻译成：坏在哪一段（本机转发器 / 上游代理链路 / 目标站点）、依据是什么。
+# 依据 = curl 退出码 + 转发器日志里最近一次向上游代理拨号的错误。
+egress_diag() {
+  local upstream where why
+  upstream=$(upstream_addr)
+  case $PROBE_RC in
+    0)
+      if [[ $PROBE_HTTP == 200 ]]; then
+        where="目标站点"; why="chatgpt.com 返回 200，但内容里没有 ip= 字段（trace 页面格式变了？）"
+      else
+        where="目标站点 / 代理出口"; why="chatgpt.com 返回 HTTP ${PROBE_HTTP:-?} 而不是 trace 内容（403/503 多为 Cloudflare 拦截了代理出口 IP）"
+      fi ;;
+    7)  where="本机转发器"; why="连不上 127.0.0.1:$PORT（转发器刚退出或端口被占）" ;;
+    28) where="上游代理链路"; why="20 秒内没有任何回应——转发器把请求交给上游代理 ${upstream} 后一直等不到数据" ;;
+    35|52|56) where="上游代理链路"; why="转发器接受了 CONNECT 但随即关闭连接——这是 mihomo 向上游代理 ${upstream} 拨号失败时的表现" ;;
+    *)  where="未知"; why="curl 退出码 $PROBE_RC" ;;
+  esac
+  bad "探测不到出口 IP：经本机转发器访问 chatgpt.com 失败"
+  printf '      故障段：%s\n      原因：%s\n' "$where" "$why"
+  [[ -n $PROBE_ERR ]] && printf '      curl 原始错误：%s\n' "$PROBE_ERR"
+  local log=$BASE/logs/$FWD_LABEL.log line when err
+  [[ -r $log ]] || return 0
+  # 本机断网时会刷大量 network is unreachable，和代理无关，排除掉再找最近一条
+  line=$(tail -n 2000 "$log" | grep 'dial codex-egress' | grep -v 'network is unreachable' | tail -1 || true)
+  if [[ -z $line ]]; then
+    printf '      转发器日志最近 2000 行没有上游拨号错误，问题更可能在本机转发器或目标站点\n'
+    return 0
+  fi
+  when=$(sed -E 's/^time="([^"]+)".*/\1/; s/T/ /; s/\.[0-9]+\+.*//' <<<"$line")
+  err=$(sed -E 's/.*error: //; s/"$//' <<<"$line")
+  printf '      转发器最近一次上游错误（%s）：%s\n' "$when" "$err"
+  case $err in
+    *"i/o timeout"*|*"context deadline"*|*"operation timed out"*)
+      printf '      → 到上游代理 %s 的建连/握手超时，属于本机→代理之间的链路问题，不是账号或脚本配置问题。\n' "$upstream"
+      printf '        注意：若本机到该 IP 走的是隧道/VPN（如云枢，route -n get %s 显示 utun），nc/telnet 显示「可连」并不代表代理真的可达，以 SOCKS 握手为准\n' "${upstream%%:*}" ;;
+    *EOF*)
+      printf '      → 上游代理在握手后主动断开：多见于来源 IP 不在代理白名单（经隧道时来源是网关出口 IP）、账号并发超限或代理服务重启\n' ;;
+    *"connection refused"*)
+      printf '      → 上游代理端口拒绝连接：代理服务没在监听\n' ;;
+    *"no route to host"*|*"network is unreachable"*)
+      printf '      → 本机没有到上游代理的路由：检查 VPN/隧道是否在线\n' ;;
+  esac
+}
+
 # 代理不通时把 curl 的真实错误和排查方向打出来，避免只留一句「连不上」
 proxy_diag() {
   local proxy=$1 out rc=0 host port
@@ -87,8 +154,14 @@ proxy_diag() {
     97) echo "  → TCP 通了但代理在握手阶段主动关闭：账号密码不对、出口 IP 不在白名单，或该账号已被别处占用（并发/粘性会话限制）" ;;
     *)  echo "  → TCP 若能通却始终失败，优先怀疑账号密码、出口 IP 白名单、账号并发限制" ;;
   esac
+  local via_if
+  via_if=$(route -n get "$host" 2>/dev/null | awk '/interface:/{print $2}' || true)
   if nc -z -G 5 -w 5 "$host" "$port" >/dev/null 2>&1; then
-    echo "  代理端口 TCP：可连（说明是认证/策略层被拒，不是网络不通）"
+    if [[ $via_if == utun* ]]; then
+      echo "  代理端口 TCP：可连，但本机到 $host 走的是隧道接口 $via_if（VPN/云枢），隧道会在本地替对端应答 TCP，「可连」不代表代理真的可达；以上面 curl 的结果为准"
+    else
+      echo "  代理端口 TCP：可连（说明是认证/策略层被拒，不是网络不通）"
+    fi
   else
     echo "  代理端口 TCP：连不上（网络层就被挡住了，先查防火墙/出网策略）"
   fi
@@ -102,11 +175,15 @@ wait_exit() {
   return 1
 }
 
+# 同时清理 .zshrc（当前写入位置）和 .zprofile（旧版本写入位置）里的 codex-proxy 块。
 remove_zprofile_block() {
-  [[ -f $ZPROFILE ]] || return 0
-  awk '/^# >>> codex-proxy/{s=1;next} /^# <<< codex-proxy/{s=0;next} !s && !/desktop-proxy\.zsh/' "$ZPROFILE" > "$ZPROFILE.codex-egress.tmp"
-  cat "$ZPROFILE.codex-egress.tmp" > "$ZPROFILE"
-  rm -f "$ZPROFILE.codex-egress.tmp"
+  local f
+  for f in "$ZSHRC" "$ZPROFILE"; do
+    [[ -f $f ]] || continue
+    awk '/^# >>> codex-proxy/{s=1;next} /^# <<< codex-proxy/{s=0;next} !s && !/desktop-proxy\.zsh/' "$f" > "$f.codex-egress.tmp"
+    cat "$f.codex-egress.tmp" > "$f"
+    rm -f "$f.codex-egress.tmp"
+  done
 }
 
 write_plist() {
@@ -243,7 +320,7 @@ EOF
     ok "已移除旧方案的 ~/.codex/desktop-proxy.zsh"
   fi
   remove_zprofile_block
-  cat >> "$ZPROFILE" <<'EOF'
+  cat >> "$ZSHRC" <<'EOF'
 # >>> codex-proxy >>>
 [[ "${CODEX_SHELL:-}" == 1 && -r ~/.codex-egress/env.zsh ]] && source ~/.codex-egress/env.zsh
 codex() {
@@ -255,17 +332,20 @@ codex() {
 }
 # <<< codex-proxy <<<
 EOF
-  ok "配置写入 ~/.codex-egress，并在 ~/.zprofile 加入 codex 命令包装"
+  ok "配置写入 ~/.codex-egress，并在 ~/.zshrc 加入 codex 命令包装"
 
   echo "4/6 启动转发器（开机自启）"
   EXTRA_KEYS='<key>KeepAlive</key><true/>' write_plist "$FWD_LABEL" "$BASE/bin/mihomo" -d "$BASE"
   local i
   for i in $(seq 20); do forwarder_up && break; sleep 0.5; done
   forwarder_up || die "转发器启动失败，查看 $BASE/logs/$FWD_LABEL.log"
-  local via
-  via=$(trace_ip "$FWD")
-  [[ $via == "$ip" ]] || die "经转发器的出口 IP 为 ${via:-空}，与代理 IP $ip 不一致"
-  ok "转发器运行中，出口 IP：$via"
+  if egress_probe "$FWD"; then
+    [[ $PROBE_IP == "$ip" ]] || die "经转发器看到的出口 IP 是 $PROBE_IP，与直连代理时的 $ip 不一致（转发器规则或代理出口有变）"
+  else
+    egress_diag
+    die "转发器已启动，但经它访问 chatgpt.com 失败（见上）"
+  fi
+  ok "转发器运行中，出口 IP：$PROBE_IP"
 
   echo "5/6 创建启动器并以代理方式启动 Codex"
   rm -rf "$LAUNCHER"
@@ -350,9 +430,15 @@ cmd_check() {
 
   echo "1. 转发器"
   if forwarder_up; then
-    local via
-    via=$(trace_ip "$FWD")
-    [[ $via == "$expect" ]] && ok "运行中，出口 IP $via" || { bad "出口 IP 为 ${via:-空}，期望 $expect"; failed=1; }
+    if egress_probe "$FWD"; then
+      if [[ $PROBE_IP == "$expect" ]]; then
+        ok "运行中，出口 IP $PROBE_IP"
+      else
+        bad "出口 IP 不符：ChatGPT 实际看到 $PROBE_IP，期望 $expect（代理出口变了？确认后重新 install 以更新期望值）"; failed=1
+      fi
+    else
+      egress_diag; failed=1
+    fi
   else
     bad "转发器未运行"; failed=1
   fi
@@ -433,6 +519,10 @@ cmd_check() {
   fi
   rm -rf "$tmp"
 
+  echo "4. 请求质量（精简版：5 次探测 + 最近 1 小时日志；完整报告见 codex-egress.sh quality）"
+  q_probe 5 || warn "链路质量不佳不影响「出网只走代理 IP」的结论，但会表现为 Codex 卡顿 / reconnecting"
+  q_log 1 || true
+
   echo
   if (( failed == 0 )) && [[ -n $known ]]; then
     printf '\033[32m通过（有已知例外）：除 Computer Use 功能外，Codex 访问 OpenAI 的请求只从 %s 出网\033[0m\n' "$expect"
@@ -442,6 +532,234 @@ cmd_check() {
     printf '\033[31m未通过，请按上面的提示处理\033[0m\n'
   fi
   return $failed
+}
+
+# ============================== 请求质量 ==============================
+# 四个数据源拼出「整条链路」的质量：
+#   A. 主动探测      本机 → 转发器 → 上游代理 → chatgpt.com，和「本机 → 上游代理 → chatgpt.com」直连对照，
+#                   区分出慢/失败在转发器还是上游
+#   B. 转发器实时连接 mihomo API /connections：Codex 当前挂着哪些长连接、活了多久、流量多少
+#   C. 转发器日志    mihomo 只记失败（log-level: warning），按「本机无网 / 上游超时 / 上游断开」分类并逐小时画出来，
+#                   叠加系统睡眠/唤醒记录，一眼看出是合盖导致还是代理本身抖
+#   D. Codex 侧      app-server-daemon 的 stderr：模型列表刷新超时、WebSocket 连不上、MCP 断流——这些就是 TUI 里 reconnecting 的直接来源
+Q_URL=https://chatgpt.com/cdn-cgi/trace
+
+api_secret() { awk '/^secret:/{print $2}' "$BASE/config.yaml"; }
+api() { curl -s -m "${2:-3}" -H "Authorization: Bearer $(api_secret)" "http://127.0.0.1:$API_PORT$1"; }
+
+# 从 config.yaml 读上游代理，供直连对照探测；凭据只进 curl 参数，不打印
+UP_SCHEME="" UP_HOST="" UP_PORT="" UP_USER="" UP_PASS=""
+load_upstream() {
+  eval "$(awk -F': ' '
+    /^    type:/ {t=$2} /^    server:/ {s=$2} /^    port:/ {p=$2}
+    /^    username:/ {u=$2} /^    password:/ {w=$2}
+    END {
+      gsub(/^\047|\047$/, "", u); gsub(/^\047|\047$/, "", w); gsub(/\047\047/, "\047", u); gsub(/\047\047/, "\047", w)
+      gsub(/\047/, "\047\\\047\047", u); gsub(/\047/, "\047\\\047\047", w)
+      printf "UP_SCHEME=%s UP_HOST=%s UP_PORT=%s UP_USER=\047%s\047 UP_PASS=\047%s\047\n", t, s, p, u, w
+    }' "$BASE/config.yaml")"
+}
+
+# 跑 n 次 curl，每行输出：http码 建链+TLS秒 首字节秒 总秒
+q_probe_run() {
+  local n=$1 i; shift
+  for i in $(seq "$n"); do
+    curl -s -m 15 --noproxy '' -o /dev/null \
+      -w '%{http_code} %{time_appconnect} %{time_starttransfer} %{time_total}\n' "$@" "$Q_URL" 2>/dev/null \
+      || echo "000 0 0 0"
+  done
+}
+# 读 q_probe_run 的输出，打一行汇总；返回值 0 良好 / 1 一般 / 2 差
+q_probe_summary() {
+  awk -v label="$1" '
+    function pct(arr, n, p,   i, j, tmp, idx) {
+      for (i = 2; i <= n; i++) { tmp = arr[i]; j = i - 1; while (j > 0 && arr[j] > tmp) { arr[j+1] = arr[j]; j-- } arr[j+1] = tmp }
+      idx = int((n - 1) * p / 100 + 0.5) + 1; return arr[idx]
+    }
+    { n++; if ($1 == "200") { ok++; a[ok] = $2 * 1000; t[ok] = $4 * 1000 } else { fail[$1]++ } }
+    END {
+      if (n == 0) { printf "  %s：没有样本\n", label; exit 2 }
+      fails = ""; for (c in fail) fails = fails sprintf(" http=%s×%d", c, fail[c])
+      if (ok == 0) { printf "  \033[31m✘\033[0m %s：%d 次全部失败%s\n", label, n, fails; exit 2 }
+      p50 = pct(t, ok, 50); p95 = pct(t, ok, 95); mx = pct(t, ok, 100)
+      tls50 = pct(a, ok, 50); tlsmx = pct(a, ok, 100)
+      grade = (ok < n) ? 2 : (p50 < 600 && p95 < 1500) ? 0 : (p50 < 1500 && p95 < 4000) ? 1 : 2
+      mark = (grade == 0) ? "\033[32m✔\033[0m" : (grade == 1) ? "\033[33m!\033[0m" : "\033[31m✘\033[0m"
+      printf "  %s %s：成功 %d/%d  建链+TLS p50 %.0fms(最差 %.0fms)  整请求 p50 %.0fms / p95 %.0fms / 最差 %.0fms%s\n",
+        mark, label, ok, n, tls50, tlsmx, p50, p95, mx, fails
+      exit grade
+    }'
+}
+
+# A. 主动探测
+q_probe() {
+  local n=${1:-10} rc_fwd=0 rc_up=0 out
+  echo "A. 主动探测 ${n} 次 ${Q_URL}（建链+TLS = CONNECT 穿过代理并完成 TLS 握手；整请求 = 到拿完响应）"
+  if forwarder_up; then
+    out=$(q_probe_run "$n" -x "$FWD")
+    q_probe_summary "经转发器 127.0.0.1:$PORT" <<<"$out" || rc_fwd=$?
+  else
+    bad "转发器未运行，跳过"; rc_fwd=2
+  fi
+  load_upstream
+  if [[ -n $UP_HOST ]]; then
+    local scheme=$UP_SCHEME; [[ $scheme == socks5 ]] && scheme=socks5h
+    out=$(q_probe_run "$n" -x "$scheme://$UP_HOST:$UP_PORT" --proxy-user "$UP_USER:$UP_PASS")
+    q_probe_summary "直连上游 $UP_HOST:$UP_PORT" <<<"$out" || rc_up=$?
+    local via_if
+    via_if=$(route -n get "$UP_HOST" 2>/dev/null | awk '/interface:/{print $2}' || true)
+    [[ $via_if == utun* ]] && printf '      本机到上游走的是隧道接口 %s（VPN/云枢），耗时包含隧道那一跳\n' "$via_if"
+  fi
+  local d i ds=""
+  for i in 1 2 3; do
+    d=$(api "/proxies/codex-egress/delay?timeout=5000&url=$(printf '%s' "$Q_URL" | sed 's/:/%3A/g; s/\//%2F/g')" 8 \
+        | jq -r 'if .delay then "\(.delay)ms" else "失败" end' 2>/dev/null || echo "失败")
+    ds+="$d "
+  done
+  printf '  转发器自测上游延迟（mihomo 内部计时，3 次）：%s\n' "$ds"
+  if (( rc_fwd == 0 )); then
+    ok "链路通畅"
+  elif (( rc_up >= rc_fwd )); then
+    warn "慢/失败在「上游代理 → OpenAI」这一段（直连上游同样差），本机转发器没有拖后腿"
+  else
+    warn "经转发器比直连上游明显更差，怀疑本机转发器（mihomo）本身：launchctl kickstart -k $GUI/$FWD_LABEL 重启它试试"
+  fi
+  return $rc_fwd
+}
+
+# B. 转发器当前连接
+q_conns() {
+  echo "B. 转发器当前经代理 IP 的连接（长连接 = Codex 挂着的 WebSocket / MCP 流；它们一断 TUI 就会 reconnecting）"
+  local json
+  json=$(api /connections) || true
+  if [[ -z $json ]]; then bad "转发器 API 不可达"; return 1; fi
+  local now; now=$(date +%s)
+  local rows
+  rows=$(jq -r '.connections[]? | select(.chains | index("codex-egress"))
+           | [ .metadata.host // .metadata.destinationIP, (.start | sub("\\.[0-9]+"; "")), .upload, .download ] | @tsv' <<<"$json" 2>/dev/null \
+    | while IFS=$'\t' read -r host start up down; do
+        local st age
+        st=$(date -j -f "%Y-%m-%dT%H:%M:%S%z" "$(sed -E 's/([+-][0-9]{2}):([0-9]{2})$/\1\2/; s/Z$/+0000/' <<<"$start")" +%s 2>/dev/null || echo "$now")
+        age=$(( now - st ))
+        printf '%s\t%d\t%d\t%d\n' "$host" "$age" "$up" "$down"
+      done | sort -t$'\t' -k2,2nr)
+  if [[ -z $rows ]]; then
+    warn "此刻没有经代理 IP 的连接（Codex 空闲或还没启动）"
+  else
+    printf '      %-44s %10s %10s %10s\n' 域名 已存活 上传 下载
+    awk -F'\t' 'function hb(b){ if(b>1048576) return sprintf("%.1fMB",b/1048576); if(b>1024) return sprintf("%.0fKB",b/1024); return b "B" }
+                function hd(s){ if(s>=3600) return sprintf("%dh%02dm",s/3600,(s%3600)/60); if(s>=60) return sprintf("%dm%02ds",s/60,s%60); return s "s" }
+                { printf "      %-44s %10s %10s %10s\n", $1, hd($2), hb($3), hb($4) }' <<<"$rows"
+  fi
+  jq -r '"      转发器自启动以来累计：上传 \(.uploadTotal/1048576|floor)MB，下载 \(.downloadTotal/1048576|floor)MB，当前连接 \(.connections|length) 条"' <<<"$json" 2>/dev/null || true
+}
+
+# C. 转发器日志：按类分、逐小时画
+q_log() {
+  local hours=${1:-24} log=$BASE/logs/$FWD_LABEL.log
+  echo "C. 转发器日志最近 ${hours} 小时（只记失败；成功的请求不在这里）"
+  [[ -r $log ]] || { warn "没有日志文件"; return 0; }
+  local since; since=$(date -v-"${hours}"H +%Y-%m-%dT%H:%M:%S)
+  local tmp; tmp=$(mktemp)
+  # 分类：L 本机无网  T 上游超时  E 上游断开  O 其它；输出：类别 小时 目标域名
+  grep -a '^time="' "$log" | awk -v since="$since" '
+    { ts = substr($0, 7, 19); if (ts < since) next
+      h = substr(ts, 1, 13)
+      host = ""; if (match($0, /--> [^ :]+:[0-9]+/)) { host = substr($0, RSTART + 4, RLENGTH - 4); sub(/:[0-9]+$/, "", host) }
+      if ($0 ~ /network is unreachable|no route to host/) c = "L"
+      else if ($0 ~ /i\/o timeout|context deadline exceeded|operation timed out/) c = "T"
+      else if ($0 ~ /error: EOF|connection reset|connection refused/) c = "E"
+      else c = "O"
+      print c "\t" h "\t" host }' > "$tmp"
+  local total; total=$(wc -l < "$tmp" | tr -d ' ')
+  if (( total == 0 )); then ok "这 ${hours} 小时转发器没有记录任何失败"; rm -f "$tmp"; return 0; fi
+  local nL nT nE nO
+  nL=$(grep -c '^L' "$tmp" || true); nT=$(grep -c '^T' "$tmp" || true); nE=$(grep -c '^E' "$tmp" || true); nO=$(grep -c '^O' "$tmp" || true)
+  printf '  共 %d 次失败：本机无网 %d（合盖/唤醒/切网时，与代理无关） | 上游超时 %d | 上游断开 %d | 其它 %d\n' "$total" "$nL" "$nT" "$nE" "$nO"
+  # 睡眠/唤醒事件所在的小时
+  local sleep_hours
+  sleep_hours=$(pmset -g log 2>/dev/null | grep -E 'Entering Sleep|Wake from|DarkWake from' | awk '{print substr($1,1,10) "T" substr($2,1,2)}' | sort -u | tr '\n' ' ' || true)
+  echo "  逐小时（每格 █ ≈ 10 次；L=本机无网 T=上游超时 E=上游断开；💤 = 该小时有睡眠/唤醒）："
+  awk -F'\t' '{print $2 "\t" $1}' "$tmp" | sort | uniq -c | awk -v sh=" $sleep_hours " '
+    function flush() {
+      if (h == "") return
+      bar = ""; for (k = 0; k < int((T + E + O + 9) / 10) && k < 40; k++) bar = bar "█"
+      lbar = ""; for (k = 0; k < int((L + 9) / 10) && k < 40; k++) lbar = lbar "░"
+      z = (index(sh, " " h " ") > 0) ? "💤" : "  "
+      printf "    %s:00 %s L%-5d T%-5d E%-4d O%-3d %s%s\n", substr(h, 6), z, L, T, E, O, bar, lbar
+      L = T = E = O = 0
+    }
+    { if ($2 != h) { flush(); h = $2 }
+      if ($3 == "L") L = $1; else if ($3 == "T") T = $1; else if ($3 == "E") E = $1; else O = $1 }
+    END { flush() }'
+  echo "    （█ 上游问题  ░ 本机无网）"
+  if (( nT + nE > 0 )); then
+    echo "  上游失败最多的目标："
+    awk -F'\t' '$1=="T"||$1=="E"{print $3}' "$tmp" | sort | uniq -c | sort -rn | head -5 | awk '{printf "      %6d  %s\n", $1, $2}'
+    local last
+    last=$(grep -a 'dial codex-egress' "$log" | grep -avE 'network is unreachable|no route to host' | tail -1 | sed -E 's/^time="([^"]+)".*error: (.*)"$/\1  \2/; s/T/ /; s/\.[0-9]+\+[0-9:]+//')
+    [[ -n $last ]] && printf '  最近一次上游失败：%s\n' "$last"
+  fi
+  rm -f "$tmp"
+  # 评级只看上游问题，排除本机无网
+  local per_hour=$(( (nT + nE) / (hours > 0 ? hours : 1) ))
+  if (( nT + nE == 0 )); then ok "上游代理在这 ${hours} 小时没有失败记录"
+  elif (( per_hour < 5 )); then ok "上游代理平均每小时失败 ${per_hour} 次，属正常抖动"
+  elif (( per_hour < 30 )); then warn "上游代理平均每小时失败 ${per_hour} 次，偏多；Codex 会时不时 reconnecting"
+  else bad "上游代理平均每小时失败 ${per_hour} 次，质量差：建议换节点或加备用节点"; return 1; fi
+}
+
+# D. Codex daemon 侧
+q_daemon() {
+  local hours=${1:-24} d=$HOME/.codex/app-server-daemon
+  echo "D. Codex app-server-daemon 最近 ${hours} 小时的网络类错误（这是 TUI 里 reconnecting 的直接来源）"
+  [[ -d $d ]] || { warn "没有 $d"; return 0; }
+  local since; since=$(date -u -v-"${hours}"H +%Y-%m-%dT%H:%M:%S)
+  local lines
+  lines=$(cat "$d/daemon.stderr.log.previous" "$d/daemon.stderr.log" 2>/dev/null | sed 's/\x1b\[[0-9;]*m//g' | awk -v s="$since" 'substr($1,1,19) >= s' || true)
+  if [[ -z $lines ]]; then ok "没有错误记录"; return 0; fi
+  local n_models n_ws n_mcp n_tls
+  n_models=$(grep -c 'failed to refresh available models' <<<"$lines" || true)
+  n_ws=$(grep -c 'failed to connect to websocket' <<<"$lines" || true)
+  n_tls=$(grep -c 'tls handshake eof' <<<"$lines" || true)
+  n_mcp=$(grep -cE 'worker quit with fatal|Transport channel closed' <<<"$lines" || true)
+  printf '  模型列表刷新超时 %d  |  模型流 WebSocket 连不上 %d（其中 TLS 被掐 %d）  |  MCP 连接断开 %d\n' "$n_models" "$n_ws" "$n_tls" "$n_mcp"
+  local last
+  last=$(grep -E 'websocket|Transport channel closed|refresh available models' <<<"$lines" | tail -3 | sed -E 's/^([0-9T:-]+)\.[0-9]+Z +ERROR +[^ ]+ +/\1Z  /' | cut -c1-150)
+  [[ -n $last ]] && { echo "  最近 3 条（UTC 时间）："; sed 's/^/      /' <<<"$last"; }
+  local up; up=$(jq -r '.processStartTime // empty' "$d/daemon.pid" 2>/dev/null || true)
+  [[ -n $up ]] && printf '  daemon 当前进程启动于：%s（自动更新/被守护重建都会导致一次 reconnecting）\n' "$up"
+  local restarts
+  restarts=$(grep -c '"event":"restart_requested"' "$d/daemon-updater.stderr.log" 2>/dev/null || true)
+  (( restarts > 0 )) && printf '  updater 日志里累计 %d 次自动更新重启\n' "$restarts"
+  if (( n_ws + n_mcp > 0 )); then warn "有 WebSocket/MCP 断连记录，和上面 C 的上游失败对照时间即可定位"; fi
+  return 0
+}
+
+cmd_quality() {
+  [[ -f $BASE/config.yaml ]] || die "未安装 codex-egress"
+  if [[ ${1:-} == live ]]; then
+    echo "实时跟踪转发器失败（Ctrl+C 退出）；[本机无网] 可忽略，[上游超时]/[上游断开] 才是代理质量问题"
+    tail -n 0 -F "$BASE/logs/$FWD_LABEL.log" | awk '
+      { ts = substr($0, 7, 19); sub(/T/, " ", ts)
+        host = ""; if (match($0, /--> [^ ]+/)) host = substr($0, RSTART + 4, RLENGTH - 4)
+        err = $0; sub(/.*error: /, "", err); sub(/"$/, "", err)
+        if ($0 ~ /network is unreachable|no route to host/) tag = "\033[2m[本机无网]\033[0m"
+        else if ($0 ~ /i\/o timeout|context deadline exceeded/) tag = "\033[33m[上游超时]\033[0m"
+        else if ($0 ~ /error: EOF|connection reset|refused/) tag = "\033[31m[上游断开]\033[0m"
+        else tag = "[其它]"
+        printf "%s %s %-40s %s\n", ts, tag, host, err; fflush() }'
+    return 0
+  fi
+  local hours=${1:-24} rc=0
+  [[ $hours =~ ^[0-9]+$ ]] || die "用法：quality [小时数] | quality live"
+  q_probe 10 || rc=1; echo
+  q_conns || true; echo
+  q_log "$hours" || rc=1; echo
+  q_daemon "$hours" || true
+  echo
+  if (( rc == 0 )); then printf '\033[32m链路质量正常\033[0m\n'; else printf '\033[33m链路质量有问题，见上面标 ! / ✘ 的项\033[0m\n'; fi
+  return $rc
 }
 
 cmd_uninstall() {
@@ -463,7 +781,7 @@ cmd_uninstall() {
     ok "已结束常驻 app-server-daemon，下次打开 Codex 会以无代理方式重建"
   fi
   rm -rf "$BASE"
-  ok "已卸载：转发器、守护、启动器、~/.zprofile 中的 codex 包装均已移除"
+  ok "已卸载：转发器、守护、启动器、~/.zshrc 中的 codex 包装均已移除"
 }
 
 case "${1:-}" in
@@ -471,6 +789,7 @@ case "${1:-}" in
   launch)       cmd_launch ;;
   guard)        cmd_guard ;;
   check)        shift; cmd_check "$@" ;;
+  quality)      shift; cmd_quality "$@" ;;
   uninstall)    cmd_uninstall ;;
-  *) sed -n '2,11p' "$0"; exit 1 ;;
+  *) sed -n '2,12p' "$0"; exit 1 ;;
 esac
