@@ -156,7 +156,8 @@ need_systemd_user() {
 detect_profile() {
   [[ -n $PROFILE ]] && return 0
   case "${SHELL:-}" in
-    */zsh)  PROFILE="$HOME/.zprofile" ;;
+    # zsh 先读 .zprofile 再读 .zshrc；写进 .zprofile 会被 .zshrc 里后续的 PATH 前置挤到后面
+    */zsh)  PROFILE="$HOME/.zshrc" ;;
     */bash) PROFILE="$HOME/.bash_profile"; [[ -f $PROFILE ]] || PROFILE="$HOME/.profile" ;;
     *)      PROFILE="$HOME/.profile" ;;
   esac
@@ -166,7 +167,7 @@ remove_profile_block() {
   detect_profile
   local f
   # 清理所有可能写入过的 rc 文件，避免换 shell 后残留
-  for f in "$PROFILE" "$HOME/.zprofile" "$HOME/.bash_profile" "$HOME/.profile" "$HOME/.bashrc"; do
+  for f in "$PROFILE" "$HOME/.zprofile" "$HOME/.zshrc" "$HOME/.zshrc.local" "$HOME/.bash_profile" "$HOME/.profile" "$HOME/.bashrc"; do
     [[ -f $f ]] || continue
     grep -q '^# >>> codex-proxy' "$f" || continue
     awk '/^# >>> codex-proxy/{s=1;next} /^# <<< codex-proxy/{s=0;next} !s' "$f" > "$f.codex-egress.tmp"
@@ -338,10 +339,11 @@ EOF
   cat >> "$PROFILE" <<EOF
 # >>> codex-proxy >>>
 # 把 codex 指向 codex-egress 的 shim（注入代理环境变量后再执行真正的 codex）
+# 先从 PATH 中移除再前置，确保 shim 总在最前（即使之前已被其他目录挤到后面）
 case ":\$PATH:" in
-  *":$SHIM_DIR:"*) ;;
-  *) PATH="$SHIM_DIR:\$PATH"; export PATH ;;
+  *":$SHIM_DIR:"*) PATH=\$(printf '%s' ":\$PATH:" | sed -e "s#:$SHIM_DIR:#:#g" -e 's#^:##' -e 's#:\$##') ;;
 esac
+PATH="$SHIM_DIR\${PATH:+:\$PATH}"; export PATH
 # <<< codex-proxy <<<
 EOF
   ok "配置写入 ~/.codex-egress，并在 ${PROFILE/#$HOME/\~} 前置 shim 目录"
